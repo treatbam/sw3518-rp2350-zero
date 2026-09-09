@@ -51,4 +51,6 @@ Tune `GAP`, `TFT_OUTER_*`, `TFT_WIN_*`, `SW_*`, `HAP_D` in `generate_case.py` af
 
 ### SW3518S (user module)
 
-Barrel-jack + stacked USB-A/C. Bay ~60×22×14 mm; USB out +X; barrel holes on ±Y. Pad `SCK` is I2C SCL.
+Barrel-jack + stacked USB-A/C. Bay ~60×22×14 mm; USB out +X; barrel on +X end, USB on +Y side. Pad `SCK` is I2C SCL.
+
+**Case port layout (v3):** DC barrel exits the **+X end** through a wide flared mouth; stacked USB-A/C exits the **+Y long side**. Zero USB-C stays on the opposite end.

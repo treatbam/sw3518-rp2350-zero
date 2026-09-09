@@ -137,12 +137,14 @@ Layouts in `src/main.cpp` are tuned for the small portrait panel:
 Button grammar is unchanged (see table above).
 
 
+
+**Case port layout (v3):** DC barrel exits the **+X end** through a wide flared mouth; stacked USB-A/C exits the **+Y long side**. Zero USB-C stays on the opposite end.
+
 ## Your SW3518S module
 
 Matched to the common **DC barrel + stacked USB-A / USB-C** board (I2C pads silk `SDA` / `SCK`):
 
-- Case bay tuned to ~**60 × 22 × 14 mm** with USB face out and **barrel holes** on both long sides (use the side that matches your jack).
-- Silkscreen **`SCK` = I2C SCL** (clock). Wire RP2350 `SCL` (GP5) to the pad labeled SCK, `SDA` (GP4) to SDA, and share GND.
+- Case bay tuned to ~**60 × 22 × 14 mm** with - Silkscreen **`SCK` = I2C SCL** (clock). Wire RP2350 `SCL` (GP5) to the pad labeled SCK, `SDA` (GP4) to SDA, and share GND.
 - If your PCB measures different, edit `SW_L` / `SW_W` / `SW_H` in `case/generate_case.py` and re-run it.
 
 ## Pocket case

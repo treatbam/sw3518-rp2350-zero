@@ -2,7 +2,7 @@
 """Pocket case v6 sandwich (caliper-driven draft).
 
 Stack (Z up):
-  1) base — thick shell with carved wells for SW3518 tall parts + flush barrel/−X & dual USB/+X
+  1) base — thick shell with carved wells for SW3518 tall parts + flush dual USB/−X & barrel/+X (matches board photos)
   2) mid_plate — clamps SW3518 (PCB-up) and carries RP2350-Zero; permanent mid-side USB notch
   3) lid — independent TFT + A/B tray (detachable; flex SPI/I2C)
 
@@ -34,7 +34,7 @@ USB_PAST = 2.0
 USB_HOUSE_W, USB_HOUSE_H = 13.2, 12.2
 USB_A_H, USB_C_H = 8.0, 3.6
 USB_A_W, USB_C_W = 12.4, 9.2
-MOUNT_INSET, MOUNT_D = 2.5, 2.2  # tunable
+MOUNT_INSET, MOUNT_D = 2.8, 2.2  # ~2–3 mm from photos
 ZERO_L, ZERO_W, ZERO_T = 23.5, 18.0, 1.0
 ZERO_USB_STICK = 9.0  # notch depth from outer wall, tunable
 ZERO_USB_W, ZERO_USB_H = 9.2, 3.4
@@ -133,36 +133,37 @@ def main():
         translate(round_rect(CAV_L, CAV_W, max(0.8, CORNER_R - 0.5)), xoff=OUTER_L / 2, yoff=0),
         BASE_H - FLOOR + 0.4, FLOOR,
     )
-    # Component wells (relative placements — tunable; centered-ish defaults)
-    # Caps often near one end; inductor central. Stub XY until Derek maps them.
+    # Component wells from board photos (USB/−X left, barrel/+X right; origin = PCB center)
+    # offsets relative to sw_cx/sw_cy
     cap_well_h = CAP_H + CAP_CLEAR + 0.3
     ind_well_h = IND_H + IND_CLEAR + 0.3
     hs_well_h = HS_H + HS_CLEAR + 0.3
+    # Cap A: lower-mid between IC and inductor; Cap B: upper near barrel; inductor lower-right;
+    # heatsink: mid-left, slightly above centerline
     wells = [
-        cyl_at(CAP_D / 2 + 0.35, cap_well_h, [sw_cx - 18, sw_cy + 5.5, FLOOR + WELL_PAD + cap_well_h / 2]),
-        cyl_at(CAP_D / 2 + 0.35, cap_well_h, [sw_cx - 18, sw_cy - 5.5, FLOOR + WELL_PAD + cap_well_h / 2]),
-        box_at([IND_XY + 0.8, IND_XY + 0.8, ind_well_h], [sw_cx + 5, sw_cy, FLOOR + WELL_PAD + ind_well_h / 2]),
-        # SW3518 IC heatsink keepout (XY stub — remap with board photo)
-        box_at([HS_XY + 0.8, HS_XY + 0.8, hs_well_h], [sw_cx - 5, sw_cy, FLOOR + WELL_PAD + hs_well_h / 2]),
+        cyl_at(CAP_D / 2 + 0.35, cap_well_h, [sw_cx + 4.0, sw_cy - 6.5, FLOOR + WELL_PAD + cap_well_h / 2]),
+        cyl_at(CAP_D / 2 + 0.35, cap_well_h, [sw_cx + 18.0, sw_cy + 6.5, FLOOR + WELL_PAD + cap_well_h / 2]),
+        box_at([IND_XY + 0.8, IND_XY + 0.8, ind_well_h], [sw_cx + 14.0, sw_cy - 5.0, FLOOR + WELL_PAD + ind_well_h / 2]),
+        box_at([HS_XY + 0.8, HS_XY + 0.8, hs_well_h], [sw_cx - 12.0, sw_cy + 2.5, FLOOR + WELL_PAD + hs_well_h / 2]),
     ]
-    # Port mouths through -X / +X
+    # Port mouths: dual USB on -X, barrel on +X (match photos; no 180° board flip)
     barrel_z = FLOOR + WELL_PAD + BARREL_H / 2 + 0.5
     barrel_cut = box_at(
         [END_LIP + BARREL_L + 2, BARREL_W + 1.0, BARREL_H + 1.2],
-        [END_LIP / 2, sw_cy, barrel_z],
+        [OUTER_L - END_LIP / 2, sw_cy, barrel_z],
     )
-    barrel_cyl = cyl_at(BARREL_OD / 2 + 0.3, END_LIP + BARREL_PAST + 6, [END_LIP / 2 - 1, sw_cy, barrel_z], axis='x')
-    barrel_collar = cyl_at(BARREL_COLLAR_OD / 2 + 0.25, 3.0, [END_LIP + 1.0, sw_cy, barrel_z], axis='x')
+    barrel_cyl = cyl_at(BARREL_OD / 2 + 0.3, END_LIP + BARREL_PAST + 6, [OUTER_L - END_LIP / 2 + 1, sw_cy, barrel_z], axis='x')
+    barrel_collar = cyl_at(BARREL_COLLAR_OD / 2 + 0.25, 3.0, [OUTER_L - END_LIP - 1.0, sw_cy, barrel_z], axis='x')
 
     usb_z = FLOOR + WELL_PAD + 1.5 + USB_C_H / 2
     usb_house = box_at(
         [END_LIP + 10, USB_HOUSE_W + 1.0, USB_HOUSE_H + 1.0],
-        [OUTER_L - END_LIP / 2, sw_cy, FLOOR + WELL_PAD + (USB_HOUSE_H + 1) / 2],
+        [END_LIP / 2, sw_cy, FLOOR + WELL_PAD + (USB_HOUSE_H + 1) / 2],
     )
     usb_c = box_at([END_LIP + 12, USB_C_W + 0.8, USB_C_H + 0.6],
-                   [OUTER_L - END_LIP / 2, sw_cy, usb_z])
+                   [END_LIP / 2, sw_cy, usb_z])
     usb_a = box_at([END_LIP + 12, USB_A_W + 0.6, USB_A_H + 0.6],
-                   [OUTER_L - END_LIP / 2, sw_cy, usb_z + USB_C_H / 2 + 0.6 + USB_A_H / 2])
+                   [END_LIP / 2, sw_cy, usb_z + USB_C_H / 2 + 0.6 + USB_A_H / 2])
 
     # PCB shelf rails (internal) — support board edges, leave well field open
     rail_y = SW_W / 2 + GAP - 0.8
@@ -181,8 +182,8 @@ def main():
         hole = cyl_at(MOUNT_D / 2, pcb_bottom_z, [hx, hy, FLOOR + pcb_bottom_z / 2])
         bosses.append(diff(boss, hole))
 
-    # Cable channel notch on +Y inner wall (I2C toward Zero/lid)
-    cable_ch = box_at([8.0, WALL + 3, 3.0], [sw_cx - 10, CAV_W / 2, pcb_bottom_z + 1.0])
+    # I2C channel on +Y (SDA/SCK top edge in photos) toward Zero/lid
+    cable_ch = box_at([10.0, WALL + 3, 3.5], [sw_cx + 6.0, CAV_W / 2, pcb_bottom_z + 1.2])
 
     base = diff(base_outer, cav, *wells, barrel_cut, barrel_cyl, barrel_collar, usb_house, usb_c, usb_a, cable_ch)
     base = union(base, *rails, *bosses)
@@ -198,8 +199,7 @@ def main():
     zero_cy = CAV_W / 2 - ZERO_W / 2 - GAP - 0.5
     zero_pocket = box_at([ZERO_L + 2 * GAP, ZERO_W + 2 * GAP, MID_T + 1], [zero_cx, zero_cy, MID_T / 2])
     haptic = cyl_at(HAP_D / 2, HAP_DEPTH, [zero_cx + 2, zero_cy, MID_T - 0.2])
-    # Permanent Zero USB notch mid-side (−Y or +Y toward outer) — through mid plate
-    # Place on −Y outer for access with case assembled
+    # Permanent Zero USB notch on +Y (matches Zero pocket)
     zusb = box_at(
         [ZERO_USB_W + 1.2, ZERO_USB_STICK + WALL + 2, ZERO_USB_H + 1.0],
         [zero_cx - ZERO_L / 2 - 1.0, OUTER_W / 2 - ZERO_USB_STICK / 2, MID_T / 2],
@@ -246,8 +246,8 @@ def main():
         cyl_at(BTN_CS / 2, 0.9, [btn_a[0], btn_a[1], LID_H - 0.35]),
         cyl_at(BTN_CS / 2, 0.9, [btn_b[0], btn_b[1], LID_H - 0.35]),
         # port relief
-        box_at([5.0, BARREL_W + 3, LID_H + 1], [2.0, 0, LID_H / 2]),
-        box_at([5.0, USB_HOUSE_W + 3, LID_H + 1], [OUTER_L - 2.0, 0, LID_H / 2]),
+        box_at([5.0, USB_HOUSE_W + 3, LID_H + 1], [2.0, 0, LID_H / 2]),
+        box_at([5.0, BARREL_W + 3, LID_H + 1], [OUTER_L - 2.0, 0, LID_H / 2]),
     )
     # friction posts for lid-as-tray (4 posts) — mate to mid plate holes later
     posts = []
@@ -303,7 +303,7 @@ def main():
             'barrel_od_collar': [BARREL_OD, BARREL_COLLAR_OD],
             'mount_inset_d': [MOUNT_INSET, MOUNT_D],
             'zero_usb_stick': ZERO_USB_STICK,
-            'well_xy_note': 'cap/inductor XY stubs — remap after photo/calipers',
+            'well_xy_note': 'XY from 2026-09-09 module photos (USB-X / barrel+X); tweak ±1–2 mm after dry-fit',
         },
         'print_outer_mm': {
             'footprint': [round(OUTER_L, 2), round(OUTER_W, 2)],
@@ -314,8 +314,8 @@ def main():
             'well_z': round(WELL_Z, 2),
         },
         'ports': {
-            'barrel': 'flush -X',
-            'usb_ac': 'dual-tier flush +X',
+            'barrel': 'flush +X',
+            'usb_ac': 'dual-tier flush -X (A over C)',
             'zero_usb_c': 'permanent mid-side notch through base+mid',
         },
     }

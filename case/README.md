@@ -56,6 +56,20 @@ Barrel-jack + stacked USB-A/C. Bay ~60×22×14 mm; USB out +X; barrel on +X end,
 **Case port layout (v3):** DC barrel exits the **+X end** through a wide flared mouth; stacked USB-A/C exits the **+Y long side**. Zero USB-C stays on the opposite end.
 
 
+
+## Pocket case (v5)
+
+That earlier **missing corner** was a crude cut for the RP2350-Zero USB-C (flashing). It looked broken — v5 replaces it with a **neat mid-side slot** on the long edge.
+
+Module-specific details:
+- **Barrel**: tight ~8 mm body + 10 mm collar recess (5.5×2.1 jack), flush on one end
+- **USB**: dual-tier mouth (C below, A above) sized to the stacked connector, flush on the other end
+- **4×** mounting bosses for the SW3518 corner holes
+- Cap clearance wells for the electrolytics under the deck
+- Lid A/B beside the screen; Zero USB-C mid-side for programming
+
+Outer ~**62 × 38 × 25 mm**. Dry-fit and tell me if hole spacing or jack height is off.
+
 ## Pocket case (v4 — flush ends)
 
 SW3518S is the **length spine**:

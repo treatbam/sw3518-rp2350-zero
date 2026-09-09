@@ -21,7 +21,11 @@
     "barrel_lwh": [
       13.0,
       11.0,
-      8.0
+      11.0
+    ],
+    "heatsink_xy_h": [
+      7.0,
+      7.0
     ],
     "barrel_past_edge": 4.0,
     "usb_past_edge": 2.0,

@@ -47,3 +47,8 @@ See `case_meta.json` -> `print_outer_mm` (generated). Typical ~**118 x 40 x 18 m
 PLA for fit check, PETG for daily · 0.2 mm · 3 walls · 15-20% · supports usually off
 
 Tune `GAP`, `TFT_OUTER_*`, `TFT_WIN_*`, `SW_*`, `HAP_D` in `generate_case.py` after a dry-fit.
+
+
+### SW3518S (user module)
+
+Barrel-jack + stacked USB-A/C. Bay ~60×22×14 mm; USB out +X; barrel holes on ±Y. Pad `SCK` is I2C SCL.

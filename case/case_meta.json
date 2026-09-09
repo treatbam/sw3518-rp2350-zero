@@ -22,20 +22,20 @@
       28.0
     ],
     "sw3518s_bay_approx": [
-      50.0,
-      30.0,
-      12.0
+      60.0,
+      22.0,
+      14.0
     ],
     "haptic_coin_d": 10.2,
     "tact_button": "6x6mm holes, no rods"
   },
   "print_outer_mm": {
     "body": [
-      117.6,
+      127.6,
       39.9,
-      17.6
+      19.6
     ],
-    "bottom_h": 14.8,
+    "bottom_h": 16.8,
     "lid_h": 2.8,
     "wall": 1.6,
     "corner_r": 3.0

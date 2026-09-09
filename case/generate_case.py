@@ -4,7 +4,7 @@
 Parametric printable shell:
   - RP2350-Zero pocket (~18 x 23.5 mm PCB) with USB-C access
   - 1.8\" ST7735 module pocket (tunable outer + screen window)
-  - SW3518S dual-port bay (~50 x 30 x 12 mm, approximate — dry-fit)
+  - SW3518S barrel+stacked A/C bay (~60 x 22 x 14 mm, from user module)
   - 2x side 6x6 tact button holes (no push rods)
   - ~10 mm coin haptic pocket under/near Zero
   - I2C cable channel Zero <-> SW3518
@@ -37,9 +37,12 @@ TFT_WIN_L = 35.0     # screen window (active-ish)
 TFT_WIN_W = 28.0
 TFT_WIN_OFF_X = 8.0  # window inset from TFT pocket -X (connector/flex end)
 
-# SW3518S dual-port board bay — APPROXIMATE, dry-fit required
-SW_L, SW_W, SW_H = 50.0, 30.0, 12.0
-SW_PORT_W, SW_PORT_H = 26.0, 10.0  # combined C+A face clearance
+# SW3518S barrel-jack + stacked USB-A/C module (user photo / common DIY board)
+# Published variants ~49-65 L x 17-22 W x ~12 H; barrel versions often ~57x22.
+# Sized with clearance for electrolytics + stacked A-over-C. Dry-fit still wise.
+SW_L, SW_W, SW_H = 60.0, 22.0, 14.0
+SW_PORT_W, SW_PORT_H = 15.5, 13.5  # stacked USB-A (top) + USB-C (bottom) face
+SW_BARREL_D = 8.2                  # 5.5mm jack body clearance through wall
 
 HAP_D, HAP_DEPTH = 10.2, 2.8
 BTN_D = 6.4          # 6x6 tact hole (slight clearance)
@@ -190,10 +193,26 @@ def main():
         [SW_L + 2 * GAP, SW_W + 2 * GAP, SW_H + 0.8],
         [sw_cx, 0.0, FLOOR + (SW_H + 0.8) / 2],
     )
-    # Port face clearance at +X end
+    # Port face clearance at +X end (stacked USB-A over USB-C)
     sw_ports = box_at(
         [WALL + 5, SW_PORT_W, SW_PORT_H],
-        [OUTER_L - WALL / 2, 0.0, FLOOR + SW_PORT_H / 2 + 0.8],
+        [OUTER_L - WALL / 2, 0.0, FLOOR + SW_PORT_H / 2 + 1.0],
+    )
+    # DC barrel jack exits the SW bay toward the I2C channel / mid-case (-X of SW zone)
+    # so USB faces out the +X end of the pocket and barrel points inward-or side.
+    # Better: barrel through +Y or -X of SW zone. Put barrel on -X face of SW bay
+    # (toward channel) if cable exits case mid-side; also cut +Y wall for barrel option.
+    sw_x0 = x0 + ZONE_TFT_L + ZONE_CH_L
+    barrel = cyl_at(
+        SW_BARREL_D / 2, WALL + 10,
+        [sw_x0 + 6.0, OUTER_W / 2, FLOOR + 6.5],
+        axis='y',
+    )
+    # Alternate: keep a second barrel option on the -Y wall for handedness
+    barrel2 = cyl_at(
+        SW_BARREL_D / 2, WALL + 10,
+        [sw_x0 + 6.0, -OUTER_W / 2, FLOOR + 6.5],
+        axis='y',
     )
 
     # I2C cable channel Zero <-> SW3518
@@ -211,7 +230,7 @@ def main():
 
     bottom = diff(
         bottom_outer, cavity, usb_cut, usb_flare, haptic, zero_pocket,
-        tft_pocket, sw_bay, sw_ports, channel, btn_l, btn_r, btn_l_cs, btn_r_cs,
+        tft_pocket, sw_bay, sw_ports, barrel, barrel2, channel, btn_l, btn_r, btn_l_cs, btn_r_cs,
     )
 
     # Rails under TFT / Zero so boards don't sit on the haptic

@@ -2,7 +2,7 @@
 """Pocket case v6 sandwich (caliper-driven draft).
 
 Stack (Z up):
-  1) base — thick shell with carved wells for SW3518 tall parts + flush dual USB/−X & barrel/+X (matches board photos)
+  1) base — SOLID glove block to PCB underside (wells/ports only; no stilts) + flush dual USB/−X & barrel/+X
   2) mid_plate — clamps SW3518 (PCB-up) and carries RP2350-Zero; permanent mid-side USB notch
   3) lid — independent TFT + A/B tray (detachable; flex SPI/I2C)
 
@@ -55,8 +55,8 @@ LIP_H = 1.2
 DECK_AIR = 1.5  # flex/air between mid and lid
 
 WELL_Z = max(CAP_H + CAP_CLEAR, IND_H + IND_CLEAR, HS_H + HS_CLEAR, BARREL_H + 1.0)  # caps 18 still win
-BASE_INNER_H = WELL_PAD + WELL_Z + SW_PCB_T + 0.6  # room to PCB top
-BASE_H = FLOOR + BASE_INNER_H
+BASE_SOLID_H = FLOOR + WELL_PAD + WELL_Z  # PCB underside
+BASE_H = BASE_SOLID_H + SW_PCB_T + 1.2  # + rim
 END_LIP = max(BARREL_PAST, USB_PAST) + 0.8  # ~4.8
 OUTER_L = SW_L + 2 * END_LIP
 OUTER_W = max(TFT_W, SW_W) + 2 * WALL + 2 * GAP + 2.0  # room for Zero beside
@@ -119,81 +119,86 @@ def union(*ms):
 def main():
     sw_cx = OUTER_L / 2
     sw_cy = 0.0
-    pcb_z = FLOOR + WELL_PAD + WELL_Z  # PCB underside sits on pillars / shelf
-    # Actually PCB-up: components down into wells. PCB bottom at FLOOR+WELL_PAD+WELL_Z? 
-    # Components hang down from PCB bottom into wells. PCB bottom face at z = FLOOR + WELL_PAD + WELL_Z
-    # Wait: wells carved UP from floor. Tall caps need WELL_Z depth below PCB.
-    # PCB bottom (component side) at z = FLOOR + WELL_PAD + WELL_Z
-    # PCB top at + SW_PCB_T; mid plate sits on that.
-    pcb_bottom_z = FLOOR + WELL_PAD + WELL_Z
-    mid_z0 = pcb_bottom_z + SW_PCB_T + 0.2
-
     outer_poly = translate(round_rect(OUTER_L, OUTER_W, CORNER_R), xoff=OUTER_L / 2, yoff=0)
 
+
     # ----- BASE -----
-    base_outer = extrude(outer_poly, BASE_H, 0)
-    cav = extrude(
-        translate(round_rect(CAV_L, CAV_W, max(0.8, CORNER_R - 0.5)), xoff=OUTER_L / 2, yoff=0),
-        BASE_H - FLOOR + 0.4, FLOOR,
-    )
-    # Component wells from board photos (USB/−X left, barrel/+X right; origin = PCB center)
-    # offsets relative to sw_cx/sw_cy
-    # Glove-fit negative geometry: true bores/pockets snug to positive parts
-    # Caps: Ø7.25 × 18 deep (Derek); inductor/HS: ~0.2–0.4 mm per side
-    cap_well_h = CAP_H  # 18 mm deep — exact
+    # Solid block up to PCB underside: glove negatives only (no open cavity / stilts).
+    pcb_bottom_z = FLOOR + WELL_PAD + WELL_Z
+    mid_z0 = pcb_bottom_z + SW_PCB_T + 0.2
+    # Rim above PCB for registration (short walls), solid fill below
+    base_solid_h = pcb_bottom_z  # top face = PCB underside
+    rim_h = SW_PCB_T + 1.2
+    base_outer = extrude(outer_poly, base_solid_h + rim_h, 0)
+
+    # Glove-fit wells (open from top of solid down)
+    cap_well_h = CAP_H  # 18 mm
     ind_well_h = IND_H + 0.3
     hs_well_h = HS_H + 0.3
-    # Cap A: lower-mid between IC and inductor; Cap B: upper near barrel; inductor lower-right;
-    # heatsink: mid-left, slightly above centerline
+    # Wells must reach the top of the solid so PCB drops in; deepen from top
+    def well_from_top(shape_maker, depth):
+        # top of solid at z=base_solid_h; well extends down `depth`
+        z_c = base_solid_h - depth / 2
+        return shape_maker(z_c, depth)
+
     wells = [
-        cyl_at(CAP_BORE_D / 2, cap_well_h, [sw_cx + 4.0, sw_cy - 6.5, FLOOR + WELL_PAD + cap_well_h / 2]),
-        cyl_at(CAP_BORE_D / 2, cap_well_h, [sw_cx + 18.0, sw_cy + 6.5, FLOOR + WELL_PAD + cap_well_h / 2]),
-        box_at([IND_BORE, IND_BORE, ind_well_h], [sw_cx + 14.0, sw_cy - 5.0, FLOOR + WELL_PAD + ind_well_h / 2]),
-        box_at([HS_BORE, HS_BORE, hs_well_h], [sw_cx - 12.0, sw_cy + 2.5, FLOOR + WELL_PAD + hs_well_h / 2]),
+        cyl_at(CAP_BORE_D / 2, cap_well_h + 0.2,
+               [sw_cx + 4.0, sw_cy - 6.5, base_solid_h - cap_well_h / 2]),
+        cyl_at(CAP_BORE_D / 2, cap_well_h + 0.2,
+               [sw_cx + 18.0, sw_cy + 6.5, base_solid_h - cap_well_h / 2]),
+        box_at([IND_BORE, IND_BORE, ind_well_h + 0.2],
+               [sw_cx + 14.0, sw_cy - 5.0, base_solid_h - ind_well_h / 2]),
+        box_at([HS_BORE, HS_BORE, hs_well_h + 0.2],
+               [sw_cx - 12.0, sw_cy + 2.5, base_solid_h - hs_well_h / 2]),
     ]
-    # Port mouths: dual USB on -X, barrel on +X (match photos; no 180° board flip)
-    barrel_z = FLOOR + WELL_PAD + BARREL_H / 2 + 0.5
+
+    # PCB outline pocket in the rim (board drops flush onto solid top)
+    pcb_pocket = box_at(
+        [SW_L + 2 * GAP, SW_W + 2 * GAP, rim_h + 0.4],
+        [sw_cx, sw_cy, base_solid_h + rim_h / 2],
+    )
+
+    # Port tunnels through solid (USB -X, barrel +X)
+    barrel_z = base_solid_h - BARREL_H / 2 - 0.5
     barrel_cut = box_at(
-        [END_LIP + BARREL_L + 2, BARREL_W + 1.0, BARREL_H + 1.2],
+        [END_LIP + BARREL_L + 4, BARREL_W + 1.0, BARREL_H + 1.2],
         [OUTER_L - END_LIP / 2, sw_cy, barrel_z],
     )
-    barrel_cyl = cyl_at(BARREL_OD / 2 + 0.3, END_LIP + BARREL_PAST + 6, [OUTER_L - END_LIP / 2 + 1, sw_cy, barrel_z], axis='x')
-    barrel_collar = cyl_at(BARREL_COLLAR_OD / 2 + 0.25, 3.0, [OUTER_L - END_LIP - 1.0, sw_cy, barrel_z], axis='x')
+    barrel_cyl = cyl_at(BARREL_OD / 2 + 0.3, END_LIP + BARREL_PAST + 8,
+                        [OUTER_L - END_LIP / 2 + 1, sw_cy, barrel_z], axis='x')
+    barrel_collar = cyl_at(BARREL_COLLAR_OD / 2 + 0.25, 3.0,
+                           [OUTER_L - END_LIP - 1.0, sw_cy, barrel_z], axis='x')
 
-    usb_z = FLOOR + WELL_PAD + 1.5 + USB_C_H / 2
+    usb_z_c = base_solid_h - 1.5 - USB_C_H / 2
     usb_house = box_at(
-        [END_LIP + 10, USB_HOUSE_W + 1.0, USB_HOUSE_H + 1.0],
-        [END_LIP / 2, sw_cy, FLOOR + WELL_PAD + (USB_HOUSE_H + 1) / 2],
+        [END_LIP + 12, USB_HOUSE_W + 1.0, USB_HOUSE_H + 1.0],
+        [END_LIP / 2, sw_cy, base_solid_h - (USB_HOUSE_H + 1) / 2],
     )
-    usb_c = box_at([END_LIP + 12, USB_C_W + 0.8, USB_C_H + 0.6],
-                   [END_LIP / 2, sw_cy, usb_z])
-    usb_a = box_at([END_LIP + 12, USB_A_W + 0.6, USB_A_H + 0.6],
-                   [END_LIP / 2, sw_cy, usb_z + USB_C_H / 2 + 0.6 + USB_A_H / 2])
+    usb_c = box_at([END_LIP + 14, USB_C_W + 0.8, USB_C_H + 0.6],
+                   [END_LIP / 2, sw_cy, usb_z_c])
+    usb_a = box_at([END_LIP + 14, USB_A_W + 0.6, USB_A_H + 0.6],
+                   [END_LIP / 2, sw_cy, usb_z_c - USB_C_H / 2 - 0.6 - USB_A_H / 2])
 
-    # PCB shelf rails (internal) — support board edges, leave well field open
-    rail_y = SW_W / 2 + GAP - 0.8
-    max_y = CAV_W / 2 - 0.8
-    rail_y = min(rail_y, max_y)
-    rails = [
-        box_at([SW_L - 4, 1.8, 1.4], [sw_cx, -rail_y, pcb_bottom_z - 0.7]),
-        box_at([SW_L - 4, 1.8, 1.4], [sw_cx, rail_y, pcb_bottom_z - 0.7]),
-    ]
-    # Mount bosses from floor up to PCB
-    bosses = []
+    # Mount holes through solid (no stilts)
+    mount_holes = []
     for sx, sy in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
         hx = sw_cx + sx * (SW_L / 2 - MOUNT_INSET)
         hy = sw_cy + sy * (SW_W / 2 - MOUNT_INSET)
-        boss = cyl_at(3.4, pcb_bottom_z - FLOOR, [hx, hy, FLOOR + (pcb_bottom_z - FLOOR) / 2])
-        hole = cyl_at(MOUNT_D / 2, pcb_bottom_z, [hx, hy, FLOOR + pcb_bottom_z / 2])
-        bosses.append(diff(boss, hole))
+        mount_holes.append(cyl_at(MOUNT_D / 2, base_solid_h + rim_h + 2,
+                                  [hx, hy, (base_solid_h + rim_h) / 2]))
 
-    # I2C channel on +Y (SDA/SCK top edge in photos) toward Zero/lid
-    cable_ch = box_at([10.0, WALL + 3, 3.5], [sw_cx + 6.0, CAV_W / 2, pcb_bottom_z + 1.2])
+    # I2C channel on +Y through rim / top edge (SDA/SCK)
+    cable_ch = box_at([10.0, WALL + 4, rim_h + 2.0],
+                      [sw_cx + 6.0, OUTER_W / 2 - WALL / 2, base_solid_h + rim_h / 2])
 
-    base = diff(base_outer, cav, *wells, barrel_cut, barrel_cyl, barrel_collar, usb_house, usb_c, usb_a, cable_ch)
-    base = union(base, *rails, *bosses)
-    # trim anything that punched outside (safety)
-    base = diff(base) if False else base
+    # Optional lightening? No — solid glove block as Derek asked.
+
+    base = diff(
+        base_outer, pcb_pocket, *wells,
+        barrel_cut, barrel_cyl, barrel_collar,
+        usb_house, usb_c, usb_a,
+        cable_ch, *mount_holes,
+    )
 
     # ----- MID PLATE -----
     mid_outer = extrude(outer_poly, MID_T, 0)

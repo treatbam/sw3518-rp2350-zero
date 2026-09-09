@@ -7,7 +7,7 @@ Stack (Z up):
   3) lid — independent TFT + A/B tray (detachable; flex SPI/I2C)
 
 Derek calipers (2026-09-09): PCB 57×22; caps Ø6.5 / 18 Z; inductor 12.5² / 9 Z;
-barrel body 13×11×8, +4 past edge; USB A+C +2 past edge; USB-A ~8 H.
+barrel body 13×11×11, +4 past edge; USB A+C +2 past edge; USB-A ~8 H.
 Tunable: barrel OD/collar, mount insets, Zero USB stick-out.
 
 Requires: trimesh, manifold3d, shapely, numpy (/workspace/.cadvenv)
@@ -26,7 +26,8 @@ CAP_D, CAP_H = 6.5, 18.0
 CAP_CLEAR = 0.5
 IND_XY, IND_H = 12.5, 9.0
 IND_CLEAR = 0.5
-BARREL_L, BARREL_W, BARREL_H = 13.0, 11.0, 8.0
+HS_XY, HS_H, HS_CLEAR = 7.0, 7.0, 0.5  # SW3518 IC heatsink keepout
+BARREL_L, BARREL_W, BARREL_H = 13.0, 11.0, 11.0
 BARREL_PAST = 4.0  # past PCB edge
 BARREL_OD, BARREL_COLLAR_OD = 8.0, 10.2  # tunable
 USB_PAST = 2.0
@@ -50,7 +51,7 @@ LID_H = 2.8
 LIP_H = 1.2
 DECK_AIR = 1.5  # flex/air between mid and lid
 
-WELL_Z = max(CAP_H + CAP_CLEAR, IND_H + IND_CLEAR, BARREL_H + 1.0)  # ~18.5
+WELL_Z = max(CAP_H + CAP_CLEAR, IND_H + IND_CLEAR, HS_H + HS_CLEAR, BARREL_H + 1.0)  # caps 18 still win
 BASE_INNER_H = WELL_PAD + WELL_Z + SW_PCB_T + 0.6  # room to PCB top
 BASE_H = FLOOR + BASE_INNER_H
 END_LIP = max(BARREL_PAST, USB_PAST) + 0.8  # ~4.8
@@ -136,10 +137,13 @@ def main():
     # Caps often near one end; inductor central. Stub XY until Derek maps them.
     cap_well_h = CAP_H + CAP_CLEAR + 0.3
     ind_well_h = IND_H + IND_CLEAR + 0.3
+    hs_well_h = HS_H + HS_CLEAR + 0.3
     wells = [
         cyl_at(CAP_D / 2 + 0.35, cap_well_h, [sw_cx - 18, sw_cy + 5.5, FLOOR + WELL_PAD + cap_well_h / 2]),
         cyl_at(CAP_D / 2 + 0.35, cap_well_h, [sw_cx - 18, sw_cy - 5.5, FLOOR + WELL_PAD + cap_well_h / 2]),
         box_at([IND_XY + 0.8, IND_XY + 0.8, ind_well_h], [sw_cx + 5, sw_cy, FLOOR + WELL_PAD + ind_well_h / 2]),
+        # SW3518 IC heatsink keepout (XY stub — remap with board photo)
+        box_at([HS_XY + 0.8, HS_XY + 0.8, hs_well_h], [sw_cx - 5, sw_cy, FLOOR + WELL_PAD + hs_well_h / 2]),
     ]
     # Port mouths through -X / +X
     barrel_z = FLOOR + WELL_PAD + BARREL_H / 2 + 0.5
@@ -290,6 +294,7 @@ def main():
             'caps_d_h': [CAP_D, CAP_H],
             'inductor_xy_h': [IND_XY, IND_H],
             'barrel_lwh': [BARREL_L, BARREL_W, BARREL_H],
+            'heatsink_xy_h': [HS_XY, HS_H],
             'barrel_past_edge': BARREL_PAST,
             'usb_past_edge': USB_PAST,
             'usb_a_h': USB_A_H,

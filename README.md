@@ -10,14 +10,15 @@ MIT licensed.
 
 | Page | Contents |
 |------|----------|
-| **MAIN** | Total W, Vin/Vout, C/A amps, protocol, C/A load-share bar, mini sparklines |
-| **C** | USB‑C zoom (W/V/A, peaks, sparkline) |
-| **A** | USB‑A zoom |
-| **SES** | Session peaks, energy (mWh/Wh), charged time, C/A sparklines |
+| **MAIN** | Large total W (text size 3), tight Vin/Vout + C/A row, load-share, tall bottom sparklines |
+| **C** | USB-C zoom (large W, V/A, peaks, ~50px sparkline) |
+| **A** | USB-A zoom |
+| **S** | Compact PEAK/AVG/ENERGY grid, then C/A spark bands |
 
-- Status crumbs along the top (`MAIN · C · A · SES`)
+- Status crumbs along the top (`M C A S`) + live/idle pip (short labels so nothing overflows 128px)
+- Portrait **128x160** layouts tuned for density (not cramped GEEK leftovers); ASCII-only TFT strings
 - Session tracking in RAM (charged ms while load present, mWh, peaks) — no NVS required for MVP
-- Haptic pulse on protocol change, page enter, session clear, and A‑long test
+- Haptic pulse on protocol change, page enter, session clear, and A-long test
 - Night dim: backlight PWM drops after ~90 s idle; any button wakes it
 
 ### Button grammar
@@ -123,6 +124,34 @@ CDC serial is enabled (`ARDUINO_USB_CDC_ON_BOOT`) for `Serial` over the Zero’s
 - Same register / ADC math (including A/C swap at ADC types 3/4)
 - `Wire.begin` is portable: ESP32 uses `(sda,scl,hz)`; RP2040/RP2350 uses `setSDA` / `setSCL` + `begin` + `setClock`
 
+## UI notes (128x160)
+
+Layouts in `src/main.cpp` are tuned for the small portrait panel:
+
+- **Status:** short crumbs `M C A S`, live pip on the right
+- **Main:** size-3 watts, compact Vin/Vout/C/A, load-share close under amps, leftover height for taller C/A sparklines; idle hints as a small footer
+- **Port (C/A):** large W, V/A row, peaks on one line, sparkline uses remaining bottom (~50px+)
+- **Session:** compact PEAK/AVG/ENERGY grid, then C and A spark bands that finish above y=160 (no clip)
+- TFT strings are ASCII-only (no em dashes)
+
+Button grammar is unchanged (see table above).
+
+## Pocket case
+
+Printable shell under [`case/`](case/):
+
+- Waveshare RP2350-Zero pocket + USB-C access
+- 1.8" ST7735 module pocket + lid window (tunable)
+- SW3518S dual-port bay (~50x30x12 mm approximate — dry-fit)
+- Side 6x6 tact holes, coin haptic pocket, I2C cable channel
+- Friction lid + optional M2 bosses
+
+```bash
+/workspace/.cadvenv/bin/python case/generate_case.py
+```
+
+See [`case/README.md`](case/README.md) and `case/case_meta.json` for outer dims and tunables.
+
 ## Layout
 
 ```
@@ -130,6 +159,7 @@ include/pins.h      pin map + ST7735 tab define
 include/sw3518.h    charger driver API
 src/sw3518.cpp      charger driver
 src/main.cpp        UI, buttons, haptic, session
+case/               pocket shell STLs + generator
 platformio.ini
 ```
 

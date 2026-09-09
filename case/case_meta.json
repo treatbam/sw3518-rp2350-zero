@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "project": "sw3518-rp2350-zero",
+  "stock_ref_mm": {
+    "rp2350_zero_pcb": [
+      23.5,
+      18.0,
+      1.0
+    ],
+    "rp2350_zero_usb_c": [
+      2.5,
+      9.2,
+      3.4
+    ],
+    "tft_module_outer": [
+      55.0,
+      34.0,
+      3.6
+    ],
+    "tft_window": [
+      35.0,
+      28.0
+    ],
+    "sw3518s_bay_approx": [
+      50.0,
+      30.0,
+      12.0
+    ],
+    "haptic_coin_d": 10.2,
+    "tact_button": "6x6mm holes, no rods"
+  },
+  "print_outer_mm": {
+    "body": [
+      117.6,
+      39.9,
+      17.6
+    ],
+    "bottom_h": 14.8,
+    "lid_h": 2.8,
+    "wall": 1.6,
+    "corner_r": 3.0
+  },
+  "layout": {
+    "x_order": [
+      "zero_usb_c",
+      "tft_plus_zero",
+      "i2c_channel",
+      "sw3518_bay_ports"
+    ],
+    "buttons": "side tact holes at TFT zone",
+    "lid": "friction lip + 2x M2 bosses"
+  },
+  "assumptions": [
+    "SW3518S bay 50x30x12 mm is approximate \u2014 dry-fit and retune SW_L/W/H",
+    "TFT outer 34.0 x 55.0 mm (common 1.8\" class; modules vary 47.5\u201358 length)",
+    "Screen window ~28 x 35 active-ish; tune TFT_WIN_* / TFT_WIN_OFF_X",
+    "RP2350-Zero ~18 x 23.5 mm PCB with USB-C on short edge"
+  ],
+  "omitted": [
+    "light_pipes",
+    "button_rods",
+    "button_caps"
+  ],
+  "tune": [
+    "GAP",
+    "TFT_OUTER_L",
+    "TFT_OUTER_W",
+    "TFT_WIN_L",
+    "TFT_WIN_W",
+    "TFT_WIN_OFF_X",
+    "SW_L",
+    "SW_W",
+    "SW_H",
+    "HAP_D"
+  ]
+}

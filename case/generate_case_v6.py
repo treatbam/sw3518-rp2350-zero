@@ -24,9 +24,12 @@ OUT = Path(__file__).resolve().parent
 SW_L, SW_W, SW_PCB_T = 57.0, 22.0, 1.6
 CAP_D, CAP_H = 6.5, 18.0
 CAP_CLEAR = 0.5
+CAP_BORE_D = 7.25  # glove fit for Ø6.5 caps (~0.75 diametral; PETG ~7.0–7.25)
 IND_XY, IND_H = 12.5, 9.0
 IND_CLEAR = 0.5
+IND_BORE = 12.9  # glove pocket for 12.5² (~0.4 per side)
 HS_XY, HS_H, HS_CLEAR = 7.0, 7.0, 0.5  # SW3518 IC heatsink keepout
+HS_BORE = 7.4  # glove pocket for 7² heatsink
 BARREL_L, BARREL_W, BARREL_H = 13.0, 11.0, 11.0
 BARREL_PAST = 4.0  # past PCB edge
 BARREL_OD, BARREL_COLLAR_OD = 8.0, 10.2  # tunable
@@ -135,16 +138,18 @@ def main():
     )
     # Component wells from board photos (USB/−X left, barrel/+X right; origin = PCB center)
     # offsets relative to sw_cx/sw_cy
-    cap_well_h = CAP_H + CAP_CLEAR + 0.3
-    ind_well_h = IND_H + IND_CLEAR + 0.3
-    hs_well_h = HS_H + HS_CLEAR + 0.3
+    # Glove-fit negative geometry: true bores/pockets snug to positive parts
+    # Caps: Ø7.25 × 18 deep (Derek); inductor/HS: ~0.2–0.4 mm per side
+    cap_well_h = CAP_H  # 18 mm deep — exact
+    ind_well_h = IND_H + 0.3
+    hs_well_h = HS_H + 0.3
     # Cap A: lower-mid between IC and inductor; Cap B: upper near barrel; inductor lower-right;
     # heatsink: mid-left, slightly above centerline
     wells = [
-        cyl_at(CAP_D / 2 + 0.35, cap_well_h, [sw_cx + 4.0, sw_cy - 6.5, FLOOR + WELL_PAD + cap_well_h / 2]),
-        cyl_at(CAP_D / 2 + 0.35, cap_well_h, [sw_cx + 18.0, sw_cy + 6.5, FLOOR + WELL_PAD + cap_well_h / 2]),
-        box_at([IND_XY + 0.8, IND_XY + 0.8, ind_well_h], [sw_cx + 14.0, sw_cy - 5.0, FLOOR + WELL_PAD + ind_well_h / 2]),
-        box_at([HS_XY + 0.8, HS_XY + 0.8, hs_well_h], [sw_cx - 12.0, sw_cy + 2.5, FLOOR + WELL_PAD + hs_well_h / 2]),
+        cyl_at(CAP_BORE_D / 2, cap_well_h, [sw_cx + 4.0, sw_cy - 6.5, FLOOR + WELL_PAD + cap_well_h / 2]),
+        cyl_at(CAP_BORE_D / 2, cap_well_h, [sw_cx + 18.0, sw_cy + 6.5, FLOOR + WELL_PAD + cap_well_h / 2]),
+        box_at([IND_BORE, IND_BORE, ind_well_h], [sw_cx + 14.0, sw_cy - 5.0, FLOOR + WELL_PAD + ind_well_h / 2]),
+        box_at([HS_BORE, HS_BORE, hs_well_h], [sw_cx - 12.0, sw_cy + 2.5, FLOOR + WELL_PAD + hs_well_h / 2]),
     ]
     # Port mouths: dual USB on -X, barrel on +X (match photos; no 180° board flip)
     barrel_z = FLOOR + WELL_PAD + BARREL_H / 2 + 0.5
@@ -303,7 +308,8 @@ def main():
             'barrel_od_collar': [BARREL_OD, BARREL_COLLAR_OD],
             'mount_inset_d': [MOUNT_INSET, MOUNT_D],
             'zero_usb_stick': ZERO_USB_STICK,
-            'well_xy_note': 'XY from 2026-09-09 module photos (USB-X / barrel+X); tweak ±1–2 mm after dry-fit',
+            'well_xy_note': 'XY from module photos; glove bores Ø7.25×18 caps, 12.9² inductor, 7.4² HS',
+            'fit': 'glove — PETG leave ~0.2–0.4 diametral; PLA can go tighter',
         },
         'print_outer_mm': {
             'footprint': [round(OUTER_L, 2), round(OUTER_W, 2)],

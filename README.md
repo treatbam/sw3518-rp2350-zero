@@ -147,6 +147,19 @@ Matched to the common **DC barrel + stacked USB-A / USB-C** board (I2C pads silk
 - Case bay tuned to ~**60 × 22 × 14 mm** with - Silkscreen **`SCK` = I2C SCL** (clock). Wire RP2350 `SCL` (GP5) to the pad labeled SCK, `SDA` (GP4) to SDA, and share GND.
 - If your PCB measures different, edit `SW_L` / `SW_W` / `SW_H` in `case/generate_case.py` and re-run it.
 
+
+## Pocket case (v4 — flush ends)
+
+SW3518S is the **length spine**:
+- **DC barrel** flush with one case end
+- **Stacked USB-A/C** flush with the opposite end
+- 1.8″ TFT + RP2350-Zero on an **upper deck** above the charger
+- Zero USB-C exits a **side** opening for flashing
+
+Outer ~**62.4 × 42.0 × 25.6 mm**.
+
+Print `case/pocket_bottom.stl` + `case/pocket_lid.stl`. Pad silk `SCK` = I2C SCL.
+
 ## Pocket case
 
 Printable shell under [`case/`](case/):

@@ -54,3 +54,16 @@ Tune `GAP`, `TFT_OUTER_*`, `TFT_WIN_*`, `SW_*`, `HAP_D` in `generate_case.py` af
 Barrel-jack + stacked USB-A/C. Bay ~60×22×14 mm; USB out +X; barrel on +X end, USB on +Y side. Pad `SCK` is I2C SCL.
 
 **Case port layout (v3):** DC barrel exits the **+X end** through a wide flared mouth; stacked USB-A/C exits the **+Y long side**. Zero USB-C stays on the opposite end.
+
+
+## Pocket case (v4 — flush ends)
+
+SW3518S is the **length spine**:
+- **DC barrel** flush with one case end
+- **Stacked USB-A/C** flush with the opposite end
+- 1.8″ TFT + RP2350-Zero on an **upper deck** above the charger
+- Zero USB-C exits a **side** opening for flashing
+
+Outer ~**62.4 × 42.0 × 25.6 mm**.
+
+Print `case/pocket_bottom.stl` + `case/pocket_lid.stl`. Pad silk `SCK` = I2C SCL.

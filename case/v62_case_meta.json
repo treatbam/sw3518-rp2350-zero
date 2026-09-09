@@ -1,22 +1,21 @@
 {
-  "version": "6.2-draft",
+  "version": "6.2-clean",
   "form": "pocket instrument / field meter",
-  "parent": "6.1",
+  "brief": "clean > clever; simple > complex for same goal",
   "parts": [
     "v62_base",
     "v62_mid_plate",
     "v62_lid",
-    "v62_tft_cartridge",
-    "v62_usb_door"
+    "v62_tft_cartridge"
   ],
   "features": [
-    "solid glove base with \u00d87.25\u00d718 cap bores (UNCHANGED from v6.1)",
-    "stronger waistline + -Y thumb flat + +Y sight groove",
-    "mid instrument rail + true ~15\u00b0 bayonet cam arcs with detent",
-    "flex at SDA/+Y hinge line (no twist under bayonet)",
-    "deeper scope bezel well + asymmetric A/B flexure cluster",
-    "TFT cartridge: 1.7mm leaf arms, lead-in hooks, lid catch ledges",
-    "captive-slide Zero USB door (PETG) + fingernail scoop"
+    "solid glove base \u00d87.25\u00d718 / 12.9\u00b2 / 7.4\u00b2 (LOCKED)",
+    "waist + thumb flat + sight groove",
+    "mid deck click lip + one M2 (no bayonet)",
+    "flex at SDA/+Y hinge line",
+    "deeper scope bezel + A/B tight pair beside bezel",
+    "TFT tray: 2 long-edge snaps + catch ledges",
+    "clean Zero USB port lip (no door)"
   ],
   "glove_locked": {
     "cap_bore_d": 7.25,
@@ -31,12 +30,12 @@
     ],
     "base_h": 23.4,
     "mid_t": 2.6,
-    "lid_h": 3.6
+    "lid_h": 3.4
   },
   "ports": {
     "usb_ac": "flush -X",
     "barrel": "flush +X",
-    "zero_usb": "+Y captive slide door"
+    "zero_usb": "+Y clean lip"
   },
   "regen": "/workspace/.cadvenv/bin/python case/generate_case_v62.py"
 }

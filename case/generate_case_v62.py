@@ -274,11 +274,11 @@ def main():
                box_at([TFT_WIN_L + 0.3, TFT_WIN_W + 0.3, LID_H + 2], [win_cx, 0, LID_H / 2]),
                box_at([TFT_WIN_L + 1.6, TFT_WIN_W + 1.6, 0.5], [win_cx, 0, LID_H - 1.5]))
 
-    # Asymmetric A/B field-meter cluster (thumb / -Y side, staggered)
-    # A: primary, larger, lower-left of cluster; B: secondary, upper-right of cluster
+    # A/B tight pair beside bezel (thumb-reachable, slight stagger — not corner-buried)
+    # Sit on +X of screen window, stacked roughly along Y with small offset
     btn_specs = [
-        ('A', OUTER_L * 0.78, -11.0, 6.0),
-        ('B', OUTER_L * 0.90, -5.5, 5.0),
+        ('A', win_cx + TFT_WIN_L / 2 + 8.5, 6.5, 5.4),
+        ('B', win_cx + TFT_WIN_L / 2 + 9.5, -6.0, 5.0),
     ]
     for _name, bx, by, island_r in btn_specs:
         island = cyl_at(island_r, 0.75, [bx, by, LID_H + 0.25])

@@ -202,7 +202,7 @@ def main():
     # Place on −Y outer for access with case assembled
     zusb = box_at(
         [ZERO_USB_W + 1.2, ZERO_USB_STICK + WALL + 2, ZERO_USB_H + 1.0],
-        [zero_cx - ZERO_L / 2 - 1.0, -OUTER_W / 2 + ZERO_USB_STICK / 2, MID_T / 2],
+        [zero_cx - ZERO_L / 2 - 1.0, OUTER_W / 2 - ZERO_USB_STICK / 2, MID_T / 2],
     )
     # screw holes aligned to SW mounts
     mid_holes = []
@@ -226,7 +226,7 @@ def main():
         base,
         box_at(
             [ZERO_USB_W + 1.2, ZERO_USB_STICK + WALL + 2, ZERO_USB_H + 1.2],
-            [zero_cx - ZERO_L / 2 - 1.0, -OUTER_W / 2 + ZERO_USB_STICK / 2, mid_z0 + MID_T / 2],
+            [zero_cx - ZERO_L / 2 - 1.0, OUTER_W / 2 - ZERO_USB_STICK / 2, mid_z0 + MID_T / 2],
         ),
     )
 

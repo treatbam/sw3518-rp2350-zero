@@ -1,0 +1,42 @@
+{
+  "version": "6.2-draft",
+  "form": "pocket instrument / field meter",
+  "parent": "6.1",
+  "parts": [
+    "v62_base",
+    "v62_mid_plate",
+    "v62_lid",
+    "v62_tft_cartridge",
+    "v62_usb_door"
+  ],
+  "features": [
+    "solid glove base with \u00d87.25\u00d718 cap bores (UNCHANGED from v6.1)",
+    "stronger waistline + -Y thumb flat + +Y sight groove",
+    "mid instrument rail + true ~15\u00b0 bayonet cam arcs with detent",
+    "flex at SDA/+Y hinge line (no twist under bayonet)",
+    "deeper scope bezel well + asymmetric A/B flexure cluster",
+    "TFT cartridge: 1.7mm leaf arms, lead-in hooks, lid catch ledges",
+    "captive-slide Zero USB door (PETG) + fingernail scoop"
+  ],
+  "glove_locked": {
+    "cap_bore_d": 7.25,
+    "cap_h": 18.0,
+    "ind_bore": 12.9,
+    "hs_bore": 7.4
+  },
+  "print_outer_mm": {
+    "footprint": [
+      66.6,
+      40.0
+    ],
+    "base_h": 23.4,
+    "mid_t": 2.6,
+    "lid_h": 3.6
+  },
+  "ports": {
+    "usb_ac": "flush -X",
+    "barrel": "flush +X",
+    "zero_usb": "+Y captive slide door"
+  },
+  "regen": "/workspace/.cadvenv/bin/python case/generate_case_v62.py"
+}

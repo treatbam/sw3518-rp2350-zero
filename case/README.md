@@ -59,7 +59,7 @@ Barrel-jack + stacked USB-A/C. Bay ~60×22×14 mm; USB out +X; barrel on +X end,
 
 ## Pocket case (v5)
 
-That earlier **missing corner** was a crude cut for the RP2350-Zero USB-C (flashing). It looked broken — v5 replaces it with a **neat mid-side slot** on the long edge.
+v5.1: **no side USB cut and no through-wall bars**. Flash the Zero with the lid off. Earlier “missing corner” / side bars were a Zero USB-C cut and ledges punching through the walls.
 
 Module-specific details:
 - **Barrel**: tight ~8 mm body + 10 mm collar recess (5.5×2.1 jack), flush on one end

@@ -1,7 +1,9 @@
 {
-  "version": 5,
-  "corner_cut_was": "Crude Zero USB-C blast near barrel corner \u2014 replaced with neat mid-side slot",
-  "layout": "SW3518 flush ends; snug barrel circle + dual-tier USB; lid buttons; Zero USB-C mid-side",
+  "version": "5.1",
+  "fixes": [
+    "Removed Zero USB-C side cut (was the random corner bite); flash with lid off",
+    "Ledges internal only \u2014 no bars through long side walls"
+  ],
   "print_outer_mm": {
     "body": [
       62.0,
@@ -9,29 +11,8 @@
       25.1
     ]
   },
-  "sw3518": {
-    "pcb": [
-      60.0,
-      22.0,
-      14.0
-    ],
-    "barrel_body_d": 8.0,
-    "barrel_collar_d": 10.2,
-    "usb_housing": [
-      13.2,
-      12.2
-    ],
-    "mount_holes_inset": 2.5,
-    "cap_wells": true
-  },
-  "lid_buttons": {
-    "A": [
-      52.0,
-      7.5
-    ],
-    "B": [
-      52.0,
-      -7.5
-    ]
+  "ports": {
+    "barrel": "tight circular -X",
+    "usb": "dual-tier A/C +X"
   }
 }

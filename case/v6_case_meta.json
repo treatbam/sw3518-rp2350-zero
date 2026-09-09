@@ -41,7 +41,8 @@
       2.2
     ],
     "zero_usb_stick": 9.0,
-    "well_xy_note": "XY from 2026-09-09 module photos (USB-X / barrel+X); tweak \u00b11\u20132 mm after dry-fit"
+    "well_xy_note": "XY from module photos; glove bores \u00d87.25\u00d718 caps, 12.9\u00b2 inductor, 7.4\u00b2 HS",
+    "fit": "glove \u2014 PETG leave ~0.2\u20130.4 diametral; PLA can go tighter"
   },
   "print_outer_mm": {
     "footprint": [

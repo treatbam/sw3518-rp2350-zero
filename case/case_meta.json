@@ -1,6 +1,6 @@
 {
-  "version": 4,
-  "layout": "SW3518 spine: barrel flush -X, USB-A/C flush +X; TFT+Zero upper deck",
+  "version": 4.1,
+  "layout": "SW3518 spine flush ends; TFT+Zero deck; wall-anchored ledges",
   "sw3518s_mm": [
     60.0,
     22.0,
@@ -15,14 +15,5 @@
     "bottom_h": 22.8,
     "lid_h": 2.8
   },
-  "ports": {
-    "barrel": "flush -X end",
-    "usb_ac_stack": "flush +X end",
-    "zero_usb_c": "-Y side near barrel end"
-  },
-  "notes": [
-    "Both ends of SW3518S sit flush with opposite case ends.",
-    "Silkscreen SCK = I2C SCL.",
-    "Dry-fit SW_L/W/H if your PCB differs."
-  ]
+  "fix": "removed floating rail bars; ledges fused into side walls"
 }

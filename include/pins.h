@@ -23,7 +23,7 @@ static const int PIN_I2C_SDA = 4;
 static const int PIN_I2C_SCL = 5;
 static const uint8_t SW3518_I2C_ADDR = 0x3C;
 
-// --- Momentary buttons (active LOW, INPUT_PULLUP) ---
+// --- Momentary buttons on case LID beside screen (active LOW, INPUT_PULLUP) ---
 static const int PIN_BTN_A = 6;  // short = next page; long = haptic test
 static const int PIN_BTN_B = 7;  // short = prev / jump Session; long = clear session
 // Optional 3rd button (Mode) — leave unused or wire to free GPIO:

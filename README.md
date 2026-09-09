@@ -159,6 +159,8 @@ SW3518S is the **length spine**:
 Outer ~**62.4 × 42.0 × 25.6 mm**.
 
 Print `case/pocket_bottom.stl` + `case/pocket_lid.stl`. Pad silk `SCK` = I2C SCL.
+**Buttons (v4.2):** on the **lid** beside the screen (A/B), not the long sides. Side wall holes removed. Wire 6×6 tacts under the lid to GP6/GP7.
+
 
 ## Pocket case
 

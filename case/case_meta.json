@@ -1,19 +1,24 @@
 {
-  "version": 4.1,
-  "layout": "SW3518 spine flush ends; TFT+Zero deck; wall-anchored ledges",
-  "sw3518s_mm": [
-    60.0,
-    22.0,
-    14.0
-  ],
+  "version": 4.2,
+  "layout": "SW3518 flush ends; TFT+Zero deck; lid buttons beside screen; no side holes",
   "print_outer_mm": {
     "body": [
       62.4,
-      42.0,
+      39.0,
       25.6
-    ],
-    "bottom_h": 22.8,
-    "lid_h": 2.8
+    ]
   },
-  "fix": "removed floating rail bars; ledges fused into side walls"
+  "lid_buttons": {
+    "A": {
+      "x": 52.2,
+      "y": 7.5
+    },
+    "B": {
+      "x": 52.2,
+      "y": -7.5
+    },
+    "hole_d": 4.2,
+    "countersink_d": 6.8,
+    "note": "6x6 tact under lid; stem through hole; wire to GP6/GP7"
+  }
 }

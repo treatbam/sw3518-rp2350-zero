@@ -1,0 +1,58 @@
+{
+  "version": "6.0-draft",
+  "stack": [
+    "base (carved Z wells)",
+    "mid_plate (SW clamp + Zero)",
+    "lid (TFT+A/B tray)"
+  ],
+  "calipers": {
+    "pcb": [
+      57.0,
+      22.0
+    ],
+    "caps_d_h": [
+      6.5,
+      18.0
+    ],
+    "inductor_xy_h": [
+      12.5,
+      9.0
+    ],
+    "barrel_lwh": [
+      13.0,
+      11.0,
+      8.0
+    ],
+    "barrel_past_edge": 4.0,
+    "usb_past_edge": 2.0,
+    "usb_a_h": 8.0
+  },
+  "tunable": {
+    "barrel_od_collar": [
+      8.0,
+      10.2
+    ],
+    "mount_inset_d": [
+      2.5,
+      2.2
+    ],
+    "zero_usb_stick": 9.0,
+    "well_xy_note": "cap/inductor XY stubs \u2014 remap after photo/calipers"
+  },
+  "print_outer_mm": {
+    "footprint": [
+      66.6,
+      40.0
+    ],
+    "base_h": 23.5,
+    "mid_t": 2.4,
+    "lid_h": 2.8,
+    "approx_assembled_h": 30.2,
+    "well_z": 18.5
+  },
+  "ports": {
+    "barrel": "flush -X",
+    "usb_ac": "dual-tier flush +X",
+    "zero_usb_c": "permanent mid-side notch through base+mid"
+  }
+}

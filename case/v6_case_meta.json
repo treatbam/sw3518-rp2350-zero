@@ -37,11 +37,11 @@
       10.2
     ],
     "mount_inset_d": [
-      2.5,
+      2.8,
       2.2
     ],
     "zero_usb_stick": 9.0,
-    "well_xy_note": "cap/inductor XY stubs \u2014 remap after photo/calipers"
+    "well_xy_note": "XY from 2026-09-09 module photos (USB-X / barrel+X); tweak \u00b11\u20132 mm after dry-fit"
   },
   "print_outer_mm": {
     "footprint": [
@@ -55,8 +55,8 @@
     "well_z": 18.5
   },
   "ports": {
-    "barrel": "flush -X",
-    "usb_ac": "dual-tier flush +X",
+    "barrel": "flush +X",
+    "usb_ac": "dual-tier flush -X (A over C)",
     "zero_usb_c": "permanent mid-side notch through base+mid"
   }
 }

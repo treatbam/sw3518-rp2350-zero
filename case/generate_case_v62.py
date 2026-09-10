@@ -123,12 +123,11 @@ def main():
         round_rect(OUTER_L - 2 * WAIST, OUTER_W - 2 * WAIST - THUMB_FLAT * 0.3, CORNER_R - 0.35),
         xoff=OUTER_L / 2, yoff=THUMB_FLAT * 0.15)
 
-    # ===== BASE (solid glove — LOCKED wells) =====
-    base = union(extrude(outer_poly, BASE_SOLID_H, 0),
-                 extrude(waist_poly, RIM_H, BASE_SOLID_H))
+    # ===== BASE (solid glove — LOCKED wells; flat PCB plane, no invading walls) =====
+    # One solid block to PCB underside. No waist rim bulkheads, no sight groove,
+    # no I2C "mystery" pocket inside the board envelope.
+    base = extrude(outer_poly, BASE_SOLID_H, 0)
 
-    sight = box_at([OUTER_L * 0.55, 1.4, 1.2],
-                   [sw_cx, OUTER_W / 2 - 0.4, BASE_SOLID_H + RIM_H - 0.35])
     wells = [
         cyl_at(CAP_BORE_D / 2, CAP_H + 0.2, [sw_cx + 4.0, sw_cy - 6.5, BASE_SOLID_H - CAP_H / 2]),
         cyl_at(CAP_BORE_D / 2, CAP_H + 0.2, [sw_cx + 18.0, sw_cy + 6.5, BASE_SOLID_H - CAP_H / 2]),
@@ -137,9 +136,8 @@ def main():
         box_at([HS_BORE, HS_BORE, HS_H + 0.4],
                [sw_cx - 12.0, sw_cy + 2.5, BASE_SOLID_H - (HS_H + 0.2) / 2]),
     ]
-    pcb_pocket = box_at([SW_L + 2 * GAP, SW_W + 2 * GAP, RIM_H + 0.4],
-                        [sw_cx, sw_cy, BASE_SOLID_H + RIM_H / 2])
 
+    # Port tunnels only (keep under PCB plane; lead-ins at outer faces)
     barrel_z = BASE_SOLID_H - BARREL_H / 2 - 0.5
     barrel_bits = [
         box_at([END_LIP + BARREL_L + 4, BARREL_W + 1.0, BARREL_H + 1.2],
@@ -148,6 +146,7 @@ def main():
                [OUTER_L - END_LIP / 2 + 1, sw_cy, barrel_z], axis='x'),
         cyl_at(BARREL_COLLAR_OD / 2 + 0.25, 3.0,
                [OUTER_L - END_LIP - 1.0, sw_cy, barrel_z], axis='x'),
+        box_at([2.5, BARREL_W + 3.0, BARREL_H + 2.5], [OUTER_L - 1.0, sw_cy, barrel_z]),
     ]
     usb_z_c = BASE_SOLID_H - 1.5 - USB_C_H / 2
     usb_bits = [
@@ -156,21 +155,33 @@ def main():
         box_at([END_LIP + 14, USB_C_W + 0.8, USB_C_H + 0.6], [END_LIP / 2, sw_cy, usb_z_c]),
         box_at([END_LIP + 14, USB_A_W + 0.6, USB_A_H + 0.6],
                [END_LIP / 2, sw_cy, usb_z_c - USB_C_H / 2 - 0.6 - USB_A_H / 2]),
+        box_at([2.5, USB_HOUSE_W + 3.0, USB_HOUSE_H + 2.5],
+               [1.0, sw_cy, BASE_SOLID_H - (USB_HOUSE_H + 1) / 2]),
     ]
-    usb_lead = box_at([2.5, USB_HOUSE_W + 3.0, USB_HOUSE_H + 2.5],
-                      [1.0, sw_cy, BASE_SOLID_H - (USB_HOUSE_H + 1) / 2])
-    barrel_lead = box_at([2.5, BARREL_W + 3.0, BARREL_H + 2.5],
-                         [OUTER_L - 1.0, sw_cy, barrel_z])
     mounts = []
     for sx, sy in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
         hx = sw_cx + sx * (SW_L / 2 - MOUNT_INSET)
         hy = sw_cy + sy * (SW_W / 2 - MOUNT_INSET)
-        mounts.append(cyl_at(MOUNT_D / 2, BASE_H + 2, [hx, hy, BASE_H / 2]))
-    hinge_ch = box_at([14.0, WALL + 5, RIM_H + 3.0],
-                      [sw_cx + 6.0, OUTER_W / 2 - 0.5, BASE_SOLID_H + RIM_H / 2])
+        mounts.append(cyl_at(MOUNT_D / 2, BASE_SOLID_H + 2, [hx, hy, BASE_SOLID_H / 2]))
 
-    base = diff(base, pcb_pocket, sight, hinge_ch, *wells, *barrel_bits, *usb_bits,
-                usb_lead, barrel_lead, *mounts)
+    # Tiny I2C exit on +Y outer wall ONLY (outside SW_W envelope) — not a floor pocket
+    i2c_exit = box_at([8.0, WALL + 2.0, 3.0],
+                      [sw_cx + 6.0, OUTER_W / 2 - WALL / 2, BASE_SOLID_H - 1.2])
+
+    base = diff(base, *wells, *barrel_bits, *usb_bits, *mounts, i2c_exit)
+
+    # Low registration frame OUTSIDE the 57×22 envelope (does not invade PCB)
+    frame_h = 1.2
+    frame_outer = extrude(outer_poly, frame_h, BASE_SOLID_H)
+    frame_cut = box_at([SW_L + 2 * GAP + 0.6, SW_W + 2 * GAP + 0.6, frame_h + 0.4],
+                       [sw_cx, sw_cy, BASE_SOLID_H + frame_h / 2])
+    # Also clear end lips so port faces stay open through the frame
+    end_clear_l = box_at([END_LIP + 1.0, SW_W + 4, frame_h + 0.6],
+                         [END_LIP / 2, 0, BASE_SOLID_H + frame_h / 2])
+    end_clear_r = box_at([END_LIP + 1.0, SW_W + 4, frame_h + 0.6],
+                         [OUTER_L - END_LIP / 2, 0, BASE_SOLID_H + frame_h / 2])
+    frame = diff(frame_outer, frame_cut, end_clear_l, end_clear_r)
+    base = union(base, frame)
 
     # ===== MID PLATE — deck + click lip + one M2 boss =====
     mid = extrude(outer_poly, MID_T, 0)
@@ -187,7 +198,8 @@ def main():
     click_lip = diff(lip_outer, lip_inner)
     mid = union(mid, rail, click_lip)
 
-    sw_open = box_at([SW_L - 6, SW_W - 4, MID_T + 2], [sw_cx, sw_cy, MID_T / 2])
+    sw_open = box_at([SW_L + 2 * GAP, SW_W + 2 * GAP, MID_T + CLICK_LIP_H + 2],
+                     [sw_cx, sw_cy, (MID_T + CLICK_LIP_H) / 2])
     zero_cx = sw_cx - 8
     zero_cy = CAV_W / 2 - ZERO_W / 2 - GAP - 0.5
     zero_pocket = box_at([ZERO_L + 2 * GAP, ZERO_W + 2 * GAP, MID_T + CLICK_LIP_H + 1],
@@ -208,9 +220,6 @@ def main():
         mid_holes.append(cyl_at(MOUNT_D / 2 + 0.1, MID_T + 4, [hx, hy, MID_T / 2]))
 
     mid = diff(mid, sw_open, zero_pocket, haptic, zero_usb, flex, *mid_holes)
-    mid = union(mid,
-                box_at([SW_L - 2, 2.0, 1.0], [sw_cx, -(SW_W / 2 + 0.2), 0.4]),
-                box_at([SW_L - 2, 2.0, 1.0], [sw_cx, (SW_W / 2 + 0.2), 0.4]))
 
     base = diff(base, box_at([ZERO_USB_W + 1.5, ZERO_USB_STICK + 3, ZERO_USB_H + 2],
                              [zero_cx - ZERO_L / 2 - 1.0, OUTER_W / 2 - ZERO_USB_STICK / 2,
@@ -305,8 +314,9 @@ def main():
         'brief': 'clean > clever; simple > complex for same goal',
         'parts': ['v62_base', 'v62_mid_plate', 'v62_lid', 'v62_tft_cartridge'],
         'features': [
-            'solid glove base Ø7.25×18 / 12.9² / 7.4² (LOCKED)',
-            'waist + thumb flat + sight groove',
+            'solid glove base Ø7.25×18 / 12.9² / 7.4² (LOCKED); no walls in PCB envelope',
+            'flat glove deck + thin outer registration frame (outside 57×22)',
+            'thumb flat kept; sight groove / mystery rim pockets removed',
             'mid deck click lip only (no bayonet, no M2)',
             'flex at SDA/+Y hinge line',
             'deeper scope bezel + aligned A/B through-holes beside bezel',

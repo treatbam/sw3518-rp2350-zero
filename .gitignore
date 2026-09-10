@@ -11,6 +11,9 @@
 
 # local credentials / secrets
 include/secrets.h
+
+# host unit-test binary
+tests/test_session
 *.pem
 *.key
 .env

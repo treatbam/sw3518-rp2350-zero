@@ -17,7 +17,7 @@ MIT licensed.
 
 - Status crumbs along the top (`M C A S`) + live/idle pip (short labels so nothing overflows 128px)
 - Portrait **128x160** layouts tuned for density (not cramped GEEK leftovers); ASCII-only TFT strings
-- Session tracking in RAM (charged ms while load present, mWh, peaks) — no NVS required for MVP
+- Session tracking in RAM (charged ms while load present, mWh, peaks) — no NVS required for MVP. I2C loss **pauses** energy (does not bill the outage). Host tests: `make -C tests test`.
 - Haptic pulse on protocol change, page enter, session clear, and A-long test
 - Night dim: backlight PWM drops after ~90 s idle; any button wakes it
 

@@ -1,0 +1,30 @@
+# v7 caliper lock (STEP rebuild)
+
+**Master:** `case/v7_lock.json` — freeze date 2026-09-09.  
+**Do not** import `v62_*.stl` as the CAD master (reference only).
+
+## Parts
+base · mid · lid · tft_tray · optional TPU button pad · optional Zero retainer clip
+
+## Hard numbers
+| Item | mm |
+|------|-----|
+| SW3518 PCB | 57 × 22 × 1.6 |
+| Cap bores | Ø7.25 × 18 deep (2×) |
+| Inductor pocket | 12.9² (part 12.5² × 9 H) |
+| Heatsink pocket | 7.4² (keepout 7³) |
+| Barrel body | 13 × 11 × 11; +4 past PCB; +X |
+| USB stack | +2 past PCB; −X; C under A |
+| Zero | 23.5 × 18; no screw holes; snug pocket + USB detent |
+| TFT outer | 55 × 34 × 3.6; window 35 × 28 |
+| Button holes | Ø4.2 aligned pair beside bezel |
+| PETG pocket clear | ~0.25 / side |
+| Wall / gap | 1.6 / 0.40 |
+
+## Print gate
+1. Base only → dry-fit SW3518 glove  
+2. Mid → Zero pocket + ports  
+3. Lid + tray  
+
+@Code Troubleshooter: amend pinout/clearance notes here if anything’s off.  
+@Creative CAD Master: sketch from this lock only → `case/v7_step/` (STEP + STL per part).

@@ -200,16 +200,27 @@ def main():
 
     sw_open = box_at([SW_L + 2 * GAP, SW_W + 2 * GAP, MID_T + CLICK_LIP_H + 2],
                      [sw_cx, sw_cy, (MID_T + CLICK_LIP_H) / 2])
+    # RP2350-Zero: no mount holes — snug rectangular pocket + USB-end detent lip
+    ZERO_CLEAR = 0.25  # PETG diametral-ish clearance per side
     zero_cx = sw_cx - 8
     zero_cy = CAV_W / 2 - ZERO_W / 2 - GAP - 0.5
-    zero_pocket = box_at([ZERO_L + 2 * GAP, ZERO_W + 2 * GAP, MID_T + CLICK_LIP_H + 1],
-                         [zero_cx, zero_cy, (MID_T + CLICK_LIP_H) / 2])
+    zero_pocket = box_at(
+        [ZERO_L + 2 * ZERO_CLEAR, ZERO_W + 2 * ZERO_CLEAR, MID_T + CLICK_LIP_H + 1],
+        [zero_cx, zero_cy, (MID_T + CLICK_LIP_H) / 2],
+    )
     haptic = cyl_at(HAP_D / 2, HAP_DEPTH, [zero_cx + 2, zero_cy, MID_T - 0.2])
 
-    # Clean Zero USB port through mid (+Y) — no door
-    zero_usb = box_at([ZERO_USB_W + 1.2, ZERO_USB_STICK + 2, ZERO_USB_H + 1],
-                      [zero_cx - ZERO_L / 2 - 1.0, OUTER_W / 2 - ZERO_USB_STICK / 2,
-                       MID_T / 2])
+    # Clean Zero USB rectangle through +Y wall
+    zero_usb = box_at(
+        [ZERO_USB_W + 0.6, ZERO_USB_STICK + 2, ZERO_USB_H + 0.6],
+        [zero_cx - ZERO_L / 2 - 1.0, OUTER_W / 2 - ZERO_USB_STICK / 2, MID_T / 2],
+    )
+    # Detent lip under USB-C shell (clicks board toward +Y / USB end)
+    # thin bar at USB end of pocket, proud into pocket ~0.6 mm
+    usb_detent = box_at(
+        [ZERO_USB_W * 0.85, 0.7, 0.9],
+        [zero_cx - ZERO_L / 2 + 0.8, zero_cy, 0.45],
+    )
     flex = box_at([12.0, 5.0, MID_T + CLICK_LIP_H + 2],
                   [sw_cx + 6.0, OUTER_W / 2 - 3.0, MID_T / 2])
 
@@ -220,6 +231,7 @@ def main():
         mid_holes.append(cyl_at(MOUNT_D / 2 + 0.1, MID_T + 4, [hx, hy, MID_T / 2]))
 
     mid = diff(mid, sw_open, zero_pocket, haptic, zero_usb, flex, *mid_holes)
+    mid = union(mid, usb_detent)
 
     base = diff(base, box_at([ZERO_USB_W + 1.5, ZERO_USB_STICK + 3, ZERO_USB_H + 2],
                              [zero_cx - ZERO_L / 2 - 1.0, OUTER_W / 2 - ZERO_USB_STICK / 2,

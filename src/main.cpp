@@ -234,6 +234,28 @@ static void drawSparkline(Adafruit_GFX& g, int x, int y, int w, int h, const flo
   }
 }
 
+// Small chip + slash: SW3518 not on I2C (overlay; pages stay normal)
+static void drawUnlinkedIcon(int x, int y) {
+  // IC body
+  canvas.drawRect(x, y, 10, 8, COL_ORANGE);
+  canvas.fillRect(x + 1, y + 1, 8, 6, COL_BLACK);
+  // pin stubs
+  canvas.drawFastVLine(x + 2, y - 1, 2, COL_ORANGE);
+  canvas.drawFastVLine(x + 5, y - 1, 2, COL_ORANGE);
+  canvas.drawFastVLine(x + 8, y - 1, 2, COL_ORANGE);
+  canvas.drawFastVLine(x + 2, y + 7, 2, COL_ORANGE);
+  canvas.drawFastVLine(x + 5, y + 7, 2, COL_ORANGE);
+  canvas.drawFastVLine(x + 8, y + 7, 2, COL_ORANGE);
+  // slash
+  canvas.drawLine(x, y + 7, x + 9, y, COL_ORANGE);
+  canvas.drawLine(x, y + 8, x + 9, y + 1, COL_ORANGE);
+}
+
+static void clearSnapshot() {
+  snap = SW3518::Snapshot{};
+  lastProtocol = SW3518::Protocol::None;
+}
+
 static void drawStatusBar() {
   canvas.fillRect(0, 0, kW, kStatusBarH, COL_BLACK);
   canvas.drawFastHLine(0, kStatusBarH - 1, kW, COL_DIM);
@@ -283,28 +305,6 @@ static void drawLoadShareBar(int y) {
   char buf[28];
   snprintf(buf, sizeof(buf), "C %.0f%%  A %.0f%%", 100.f * pc / tot, 100.f * pa / tot);
   gfxText(canvas, 4, y - 10, buf, COL_LIGHTGREY, COL_BLACK, 1);
-}
-
-// Small chip + slash: SW3518 not on I2C (overlay; pages stay normal)
-static void drawUnlinkedIcon(int x, int y) {
-  // IC body
-  canvas.drawRect(x, y, 10, 8, COL_ORANGE);
-  canvas.fillRect(x + 1, y + 1, 8, 6, COL_BLACK);
-  // pin stubs
-  canvas.drawFastVLine(x + 2, y - 1, 2, COL_ORANGE);
-  canvas.drawFastVLine(x + 5, y - 1, 2, COL_ORANGE);
-  canvas.drawFastVLine(x + 8, y - 1, 2, COL_ORANGE);
-  canvas.drawFastVLine(x + 2, y + 7, 2, COL_ORANGE);
-  canvas.drawFastVLine(x + 5, y + 7, 2, COL_ORANGE);
-  canvas.drawFastVLine(x + 8, y + 7, 2, COL_ORANGE);
-  // slash
-  canvas.drawLine(x, y + 7, x + 9, y, COL_ORANGE);
-  canvas.drawLine(x, y + 8, x + 9, y + 1, COL_ORANGE);
-}
-
-static void clearSnapshot() {
-  snap = SW3518::Snapshot{};
-  lastProtocol = SW3518::Protocol::None;
 }
 
 static void drawMain() {

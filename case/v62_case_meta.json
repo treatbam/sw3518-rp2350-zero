@@ -1,0 +1,42 @@
+{
+  "version": "6.2-cleanup",
+  "form": "pocket instrument / field meter",
+  "brief": "clean > clever; simple > complex for same goal",
+  "parts": [
+    "v62_base",
+    "v62_mid_plate",
+    "v62_lid",
+    "v62_tft_cartridge"
+  ],
+  "features": [
+    "solid glove base \u00d87.25\u00d718 / 12.9\u00b2 / 7.4\u00b2 (LOCKED); no walls in PCB envelope",
+    "flat glove deck + thin outer registration frame (outside 57\u00d722)",
+    "thumb flat kept; sight groove / mystery rim pockets removed",
+    "mid deck click lip only (no bayonet, no M2)",
+    "flex at SDA/+Y hinge line",
+    "deeper scope bezel + aligned A/B through-holes beside bezel",
+    "TFT tray: 2 long-edge snaps + catch ledges",
+    "one clean Zero USB rectangle (no door, no step)"
+  ],
+  "glove_locked": {
+    "cap_bore_d": 7.25,
+    "cap_h": 18.0,
+    "ind_bore": 12.9,
+    "hs_bore": 7.4
+  },
+  "print_outer_mm": {
+    "footprint": [
+      66.6,
+      40.0
+    ],
+    "base_h": 22.0,
+    "mid_t": 2.6,
+    "lid_h": 3.4
+  },
+  "ports": {
+    "usb_ac": "flush -X",
+    "barrel": "flush +X",
+    "zero_usb": "+Y clean lip"
+  },
+  "regen": "/workspace/.cadvenv/bin/python case/generate_case_v62.py"
+}

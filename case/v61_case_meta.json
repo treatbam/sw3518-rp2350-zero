@@ -1,0 +1,33 @@
+{
+  "version": "6.1-draft",
+  "form": "pocket instrument / field meter",
+  "parts": [
+    "v61_base",
+    "v61_mid_plate",
+    "v61_lid",
+    "v61_tft_cartridge"
+  ],
+  "features": [
+    "solid glove base with \u00d87.25\u00d718 cap bores",
+    "waistline + -Y thumb flat + +Y sight groove",
+    "mid instrument rail + 15\u00b0 bayonet lugs",
+    "flex at SDA/+Y hinge line (no twist under bayonet)",
+    "lid bezel + rear snap TFT cartridge",
+    "A/B printed flexure islands",
+    "Zero USB flush service flap (plug + fingernail scoop)"
+  ],
+  "print_outer_mm": {
+    "footprint": [
+      66.6,
+      40.0
+    ],
+    "base_h": 23.4,
+    "mid_t": 2.6,
+    "lid_h": 3.2
+  },
+  "ports": {
+    "usb_ac": "flush -X",
+    "barrel": "flush +X",
+    "zero_usb": "+Y service flap"
+  }
+}

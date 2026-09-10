@@ -28,3 +28,15 @@ base · mid · lid · tft_tray · optional TPU button pad · optional Zero retai
 
 @Code Troubleshooter: amend pinout/clearance notes here if anything’s off.  
 @Creative CAD Master: sketch from this lock only → `case/v7_step/` (STEP + STL per part).
+
+## Wiring / clearance (CT amend)
+| Bus | Pins | Notes |
+|-----|------|-------|
+| I2C SW3518 | GP4 SDA, GP5 SCL (`0x3C`) | Silk `SCK` = SCL; exit +Y |
+| TFT SPI | 18/19/17/16/20/21 | 6-wire bundle Zero → lid tray |
+| Buttons | GP6 A, GP7 B | Active LOW pullup |
+| Haptic | GP9 | N-FET; optional well |
+
+Flex channel ≥ **10 × 3 mm** on +Y; **~25 mm** slack so lid lifts off without yanking joints.
+Do not invade the 57×22 PCB envelope except glove wells + port tunnels.
+

@@ -6,10 +6,17 @@
     "primary": "PETG",
     "optional_buttons": "TPU pad",
     "wall_min_mm": 1.6,
-    "general_gap_mm": 0.40,
+    "general_gap_mm": 0.4,
     "petg_pocket_clearance_per_side_mm": 0.25
   },
-  "parts": ["base", "mid", "lid", "tft_tray", "optional_tpu_button_pad", "optional_zero_retainer_clip"],
+  "parts": [
+    "base",
+    "mid",
+    "lid",
+    "tft_tray",
+    "optional_tpu_button_pad",
+    "optional_zero_retainer_clip"
+  ],
   "interfaces": {
     "mid_on": "SW3518 PCB top (PCB-up, components in base wells)",
     "lid_on": "mid click-lip",
@@ -17,31 +24,109 @@
     "zero_retention": "snug mid pocket + USB-end detent lip (clip optional)"
   },
   "sw3518": {
-    "pcb_l_w_t_mm": [57.0, 22.0, 1.6],
+    "pcb_l_w_t_mm": [
+      57.0,
+      22.0,
+      1.6
+    ],
     "orientation": "USB dual stack at -X; barrel at +X; SDA/SCK on +Y long edge",
-    "mount_holes": {"inset_from_edges_mm": 2.8, "hole_d_mm": 2.2, "count": 4},
-    "caps": {"count": 2, "od_mm": 6.5, "height_mm": 18.0, "bore_d_mm": 7.25, "bore_depth_mm": 18.0,
-      "xy_from_pcb_center_mm": [[4.0, -6.5], [18.0, 6.5]]},
-    "inductor": {"xy_mm": 12.5, "height_mm": 9.0, "pocket_xy_mm": 12.9,
-      "center_from_pcb_center_mm": [14.0, -5.0]},
-    "heatsink_keepout": {"xy_mm": 7.0, "height_mm": 7.0, "pocket_xy_mm": 7.4,
-      "center_from_pcb_center_mm": [-12.0, 2.5]},
-    "barrel": {"body_l_w_h_mm": [13.0, 11.0, 11.0], "past_pcb_edge_mm": 4.0,
-      "od_mm": 8.0, "collar_od_mm": 10.2, "end": "+X"},
-    "usb_stack": {"past_pcb_edge_mm": 2.0, "housing_w_h_mm": [13.2, 12.2],
-      "usb_a_w_h_mm": [12.4, 8.0], "usb_c_w_h_mm": [9.2, 3.6], "end": "-X", "note": "C under A"}
+    "mount_holes": {
+      "inset_from_edges_mm": 2.8,
+      "hole_d_mm": 2.2,
+      "count": 4
+    },
+    "caps": {
+      "count": 2,
+      "od_mm": 6.5,
+      "height_mm": 18.0,
+      "bore_d_mm": 7.25,
+      "bore_depth_mm": 18.0,
+      "xy_from_pcb_center_mm": [
+        [
+          4.0,
+          -6.5
+        ],
+        [
+          18.0,
+          6.5
+        ]
+      ]
+    },
+    "inductor": {
+      "xy_mm": 12.5,
+      "height_mm": 9.0,
+      "pocket_xy_mm": 12.9,
+      "center_from_pcb_center_mm": [
+        14.0,
+        -5.0
+      ]
+    },
+    "heatsink_keepout": {
+      "xy_mm": 7.0,
+      "height_mm": 7.0,
+      "pocket_xy_mm": 7.4,
+      "center_from_pcb_center_mm": [
+        -12.0,
+        2.5
+      ]
+    },
+    "barrel": {
+      "body_l_w_h_mm": [
+        13.0,
+        11.0,
+        11.0
+      ],
+      "past_pcb_edge_mm": 4.0,
+      "od_mm": 8.0,
+      "collar_od_mm": 10.2,
+      "end": "+X"
+    },
+    "usb_stack": {
+      "past_pcb_edge_mm": 2.0,
+      "housing_w_h_mm": [
+        13.2,
+        12.2
+      ],
+      "usb_a_w_h_mm": [
+        12.4,
+        8.0
+      ],
+      "usb_c_w_h_mm": [
+        9.2,
+        3.6
+      ],
+      "end": "-X",
+      "note": "C under A"
+    }
   },
   "rp2350_zero": {
-    "board_l_w_mm": [23.5, 18.0],
+    "board_l_w_mm": [
+      23.5,
+      18.0
+    ],
     "mount_holes": false,
-    "usb_c": {"end": "short edge toward +Y case wall", "stickout_past_board_mm_tunable": 6.0,
-      "port_clear_w_h_mm": [12.0, 8.0], "note": "size for real plug + finger; clean rectangle"},
+    "usb_c": {
+      "end": "short edge toward +Y case wall",
+      "stickout_past_board_mm_tunable": 6.0,
+      "port_clear_w_h_mm": [
+        12.0,
+        8.0
+      ],
+      "note": "size for real plug + finger; clean rectangle"
+    },
     "pocket_clearance_per_side_mm": 0.25,
     "retention": "USB-end detent lip under connector shell; optional retainer clip"
   },
   "tft_st7735_1_8": {
-    "outer_l_w_t_mm": [55.0, 34.0, 3.6],
-    "window_l_w_mm": [35.0, 28.0],
+    "outer_l_w_t_mm": [
+      55.0,
+      34.0,
+      3.6
+    ],
+    "window_l_w_mm": [
+      35.0,
+      28.0
+    ],
     "window_off_x_from_tft_origin_mm": 8.0,
     "mount": "separate tray snaps into lid; no fasteners into glass"
   },
@@ -51,8 +136,81 @@
     "layout": "aligned pair beside bezel on +X side of window (not corner cluster)",
     "optional": "TPU pad instead of carved flexures"
   },
-  "haptic": {"coin_d_mm": 10.2, "well_depth_mm": 2.6, "optional": true},
-  "i2c": {"pads": ["SDA", "SCK"], "edge": "+Y", "flex_exit": "+Y hinge line / SDA edge — no twist path"},
-  "print_order": ["base (glove fit gate)", "mid", "lid + tft_tray"],
-  "non_goals": ["bayonet", "living-hinge USB door", "printed flexure spaghetti", "importing v62 STL as master"]
+  "haptic": {
+    "coin_d_mm": 10.2,
+    "well_depth_mm": 2.6,
+    "optional": true
+  },
+  "i2c": {
+    "pads": [
+      "SDA",
+      "SCK"
+    ],
+    "edge": "+Y",
+    "flex_exit": "+Y hinge line / SDA edge \u2014 no twist path"
+  },
+  "print_order": [
+    "base (glove fit gate)",
+    "mid",
+    "lid + tft_tray"
+  ],
+  "non_goals": [
+    "bayonet",
+    "living-hinge USB door",
+    "printed flexure spaghetti",
+    "importing v62 STL as master"
+  ],
+  "wiring": {
+    "source": "include/pins.h",
+    "notes": [
+      "SW3518 silk SCK is I2C SCL (not SPI clock).",
+      "Lid must detach with flex slack on +Y; do not route under bayonet/twist loads.",
+      "Size +Y flex channel for ~10\u201312 discrete wires or one ribbon fold, not a pinhole."
+    ],
+    "i2c_sw3518": {
+      "sda_gpio": 4,
+      "scl_gpio": 5,
+      "addr": "0x3C",
+      "exit": "+Y"
+    },
+    "tft_spi": {
+      "sck": 18,
+      "mosi": 19,
+      "cs": 17,
+      "dc": 16,
+      "rst": 20,
+      "bl": 21,
+      "bundle_wires": 6,
+      "path": "mid Zero \u2192 +Y flex \u2192 lid tray"
+    },
+    "buttons": {
+      "a_gpio": 6,
+      "b_gpio": 7,
+      "active": "LOW pullup",
+      "wires": 2
+    },
+    "haptic": {
+      "gpio": 9,
+      "drive": "N-FET gate active HIGH",
+      "optional_well": true
+    },
+    "service_slack_mm": 25,
+    "flex_channel_min_w_h_mm": [
+      10.0,
+      3.0
+    ]
+  },
+  "clearances": {
+    "petg_pocket_per_side_mm": 0.25,
+    "tact_hole_vs_6x6_cap_mm": "\u00d84.2 hole over 6x6 tact; leave \u22651.0 rim to bezel edge",
+    "zero_usb_port_rect_mm": [
+      12.0,
+      8.0
+    ],
+    "do_not": [
+      "invade 57\u00d722 PCB envelope except glove wells + port tunnels",
+      "carve flexure spaghetti in lid",
+      "living-hinge USB door"
+    ]
+  }
 }

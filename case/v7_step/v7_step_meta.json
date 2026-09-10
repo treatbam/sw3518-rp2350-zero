@@ -1,0 +1,67 @@
+{
+  "version": "7.0-step",
+  "lock": "case/v7_lock.json",
+  "generator": "case/generate_v7_step.py",
+  "parts": [
+    {
+      "name": "base",
+      "bbox_mm": [
+        66.6,
+        40.0,
+        23.0
+      ],
+      "step": "v7_base.step",
+      "stl": "v7_base.stl"
+    },
+    {
+      "name": "mid",
+      "bbox_mm": [
+        66.6,
+        40.0,
+        3.8
+      ],
+      "step": "v7_mid.step",
+      "stl": "v7_mid.stl"
+    },
+    {
+      "name": "lid",
+      "bbox_mm": [
+        66.6,
+        38.64,
+        3.2
+      ],
+      "step": "v7_lid.step",
+      "stl": "v7_lid.stl"
+    },
+    {
+      "name": "tft_tray",
+      "bbox_mm": [
+        58.0,
+        37.5,
+        4.13
+      ],
+      "step": "v7_tft_tray.step",
+      "stl": "v7_tft_tray.stl"
+    },
+    {
+      "name": "tpu_button_pad",
+      "bbox_mm": [
+        10.0,
+        18.0,
+        3.7
+      ],
+      "step": "v7_tpu_button_pad.step",
+      "stl": "v7_tpu_button_pad.stl"
+    },
+    {
+      "name": "zero_retainer_clip",
+      "bbox_mm": [
+        26.0,
+        3.0,
+        3.0
+      ],
+      "step": "v7_zero_retainer_clip.step",
+      "stl": "v7_zero_retainer_clip.stl"
+    }
+  ]
+}

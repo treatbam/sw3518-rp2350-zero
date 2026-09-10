@@ -9,9 +9,11 @@ Keeps:
   - Deeper scope bezel + A/B tight pair beside bezel
   - TFT rear tray with quiet snap (2 clips + catch ledges)
 
-Sheds:
-  - Bayonet cams → perimeter click lip + one M2
-  - Captive USB door → clean port lip / lead-in only
+Sheds / cleanup:
+  - Bayonet cams → perimeter click lip (no fastener)
+  - Captive USB door → one clean Zero USB rectangle
+  - Flexure spaghetti → plain A/B through-holes, aligned
+  - Drop M2 countersink
 
 Requires: trimesh, manifold3d, shapely, numpy
 """
@@ -40,7 +42,6 @@ TFT_L, TFT_W, TFT_T = 55.0, 34.0, 3.6
 TFT_WIN_L, TFT_WIN_W, TFT_WIN_OFF_X = 35.0, 28.0, 8.0
 BTN_D = 4.2
 HAP_D, HAP_DEPTH = 10.2, 2.6
-M2_D, M2_BOSS_D = 2.2, 5.5  # clearance + boss OD for one lid fastener
 
 WALL, GAP, CORNER_R = 1.6, 0.40, 3.2
 FLOOR, WELL_PAD = 1.8, 1.0
@@ -206,22 +207,16 @@ def main():
         hy = sw_cy + sy * (SW_W / 2 - MOUNT_INSET)
         mid_holes.append(cyl_at(MOUNT_D / 2 + 0.1, MID_T + 4, [hx, hy, MID_T / 2]))
 
-    # One intentional M2 boss near +Y / screen side (lid fastener)
-    m2_x, m2_y = sw_cx + 18.0, OUTER_W / 2 - 6.0
-    m2_boss = cyl_at(M2_BOSS_D / 2, CLICK_LIP_H + 0.4, [m2_x, m2_y, MID_T + CLICK_LIP_H / 2])
-    m2_hole = cyl_at(M2_D / 2, MID_T + CLICK_LIP_H + 4, [m2_x, m2_y, MID_T / 2])
-
     mid = diff(mid, sw_open, zero_pocket, haptic, zero_usb, flex, *mid_holes)
-    mid = union(mid, m2_boss,
+    mid = union(mid,
                 box_at([SW_L - 2, 2.0, 1.0], [sw_cx, -(SW_W / 2 + 0.2), 0.4]),
                 box_at([SW_L - 2, 2.0, 1.0], [sw_cx, (SW_W / 2 + 0.2), 0.4]))
-    mid = diff(mid, m2_hole)
 
     base = diff(base, box_at([ZERO_USB_W + 1.5, ZERO_USB_STICK + 3, ZERO_USB_H + 2],
                              [zero_cx - ZERO_L / 2 - 1.0, OUTER_W / 2 - ZERO_USB_STICK / 2,
                               mid_z0 + MID_T / 2]))
 
-    # ===== LID — bezel, A/B pair, click recess, one M2, clean USB lip =====
+    # ===== LID — bezel, aligned A/B holes, click recess, clean USB rectangle =====
     lid = extrude(outer_poly, LID_H, 0)
     chamfer = extrude(translate(round_rect(OUTER_L + 2, OUTER_W + 2, CORNER_R),
                                 xoff=OUTER_L / 2, yoff=0), 0.9, LID_H - 0.5)
@@ -236,16 +231,10 @@ def main():
                box_at([TFT_WIN_L + 0.3, TFT_WIN_W + 0.3, LID_H + 2], [win_cx, 0, LID_H / 2]),
                box_at([TFT_WIN_L + 1.5, TFT_WIN_W + 1.5, 0.45], [win_cx, 0, LID_H - 1.4]))
 
-    # A/B tight pair beside +X of bezel
-    for bx, by, island_r in [
-        (win_cx + TFT_WIN_L / 2 + 8.5, 6.5, 5.2),
-        (win_cx + TFT_WIN_L / 2 + 9.5, -6.0, 4.8),
-    ]:
-        lid = union(lid, cyl_at(island_r, 0.7, [bx, by, LID_H + 0.2]))
-        groove = diff(cyl_at(island_r - 0.45, 0.8, [bx, by, LID_H - 0.3]),
-                      cyl_at(2.0, 1.0, [bx, by, LID_H - 0.3]))
-        groove = diff(groove, box_at([island_r * 2.1, 2.6, 1.0], [bx, by, LID_H - 0.3]))
-        lid = diff(lid, groove, cyl_at(BTN_D / 2, LID_H + 2, [bx, by, LID_H / 2]))
+    # A/B plain through-holes, aligned on one X beside bezel (no flexure islands)
+    btn_x = win_cx + TFT_WIN_L / 2 + 9.0
+    for by in (6.0, -6.0):
+        lid = diff(lid, cyl_at(BTN_D / 2, LID_H + 2, [btn_x, by, LID_H / 2]))
 
     # Click recess on underside (mates mid lip)
     recess_outer = extrude(translate(
@@ -258,17 +247,10 @@ def main():
         xoff=OUTER_L / 2, yoff=THUMB_FLAT * 0.06), CLICK_LIP_H + 0.5, -0.05)
     lid = diff(lid, diff(recess_outer, recess_keep))
 
-    # One M2 through lid into mid boss
-    lid = diff(lid, cyl_at(M2_D / 2 + 0.15, LID_H + 2, [m2_x, m2_y, LID_H / 2]),
-               cyl_at(4.0, 0.7, [m2_x, m2_y, LID_H - 0.25]))  # flat countersink
-
-    # Clean Zero USB lip (plug clearance + outer lead-in) — no door
+    # One clean Zero USB rectangle (no stepped lead-in, no door, no M2)
     flap_x = zero_cx - ZERO_L / 2 - 1.0
-    lid = diff(lid,
-               box_at([ZERO_USB_W + 1.0, 5.5, ZERO_USB_H],
-                      [flap_x, OUTER_W / 2 - 2.5, LID_H / 2]),
-               box_at([ZERO_USB_W + 2.5, 2.2, ZERO_USB_H + 1],
-                      [flap_x, OUTER_W / 2 - 0.6, LID_H / 2]))
+    lid = diff(lid, box_at([ZERO_USB_W + 1.2, 5.0, LID_H + 2],
+                           [flap_x, OUTER_W / 2 - 2.2, LID_H / 2]))
 
     # ===== TFT CARTRIDGE — two quiet side clips + catch ledges =====
     cart = diff(box_at([TFT_L + 3.0, TFT_W + 3.0, CART_H], [OUTER_L / 2, 0, CART_H / 2]),
@@ -318,18 +300,18 @@ def main():
     union(base.copy(), mid_p, lid_p, cart_p).export(OUT / 'v62_preview_exploded.stl')
 
     meta = {
-        'version': '6.2-clean',
+        'version': '6.2-cleanup',
         'form': 'pocket instrument / field meter',
         'brief': 'clean > clever; simple > complex for same goal',
         'parts': ['v62_base', 'v62_mid_plate', 'v62_lid', 'v62_tft_cartridge'],
         'features': [
             'solid glove base Ø7.25×18 / 12.9² / 7.4² (LOCKED)',
             'waist + thumb flat + sight groove',
-            'mid deck click lip + one M2 (no bayonet)',
+            'mid deck click lip only (no bayonet, no M2)',
             'flex at SDA/+Y hinge line',
-            'deeper scope bezel + A/B tight pair beside bezel',
+            'deeper scope bezel + aligned A/B through-holes beside bezel',
             'TFT tray: 2 long-edge snaps + catch ledges',
-            'clean Zero USB port lip (no door)',
+            'one clean Zero USB rectangle (no door, no step)',
         ],
         'glove_locked': {
             'cap_bore_d': CAP_BORE_D, 'cap_h': CAP_H,

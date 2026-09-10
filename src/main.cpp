@@ -255,9 +255,14 @@ static void drawStatusBar() {
     x += tw + 8;
   }
 
-  // tiny live/idle pip
-  const bool live = snap.ia_ma > kLoadMa || snap.ic_ma > kLoadMa;
-  canvas.fillCircle(kW - 6, 5, 3, live ? COL_GREEN : COL_DIM);
+  if (!chargerOk) {
+    // CHG label already drawn; retint + unlink chip icon (top-right)
+    gfxText(canvas, 2, 2, "CHG", COL_ORANGE, COL_BLACK, 1);
+    drawUnlinkedIcon(kW - 14, 2);
+  } else {
+    const bool live = snap.ia_ma > kLoadMa || snap.ic_ma > kLoadMa;
+    canvas.fillCircle(kW - 6, 5, 3, live ? COL_GREEN : COL_DIM);
+  }
 }
 
 static void drawLoadShareBar(int y) {
@@ -280,11 +285,26 @@ static void drawLoadShareBar(int y) {
   gfxText(canvas, 4, y - 10, buf, COL_LIGHTGREY, COL_BLACK, 1);
 }
 
-static void drawMissing() {
-  canvas.fillScreen(COL_BLACK);
-  gfxText(canvas, kW / 2, kH / 2 - 12, "SW3518 not found", COL_ORANGE, COL_BLACK, 1, true);
-  gfxText(canvas, kW / 2, kH / 2 + 4, "I2C 0x3C SDA4/SCL5", COL_DARKGREY, COL_BLACK, 1, true);
-  tft.drawRGBBitmap(0, 0, canvas.getBuffer(), kW, kH);
+// Small chip + slash: SW3518 not on I2C (overlay; pages stay normal)
+static void drawUnlinkedIcon(int x, int y) {
+  // IC body
+  canvas.drawRect(x, y, 10, 8, COL_ORANGE);
+  canvas.fillRect(x + 1, y + 1, 8, 6, COL_BLACK);
+  // pin stubs
+  canvas.drawFastVLine(x + 2, y - 1, 2, COL_ORANGE);
+  canvas.drawFastVLine(x + 5, y - 1, 2, COL_ORANGE);
+  canvas.drawFastVLine(x + 8, y - 1, 2, COL_ORANGE);
+  canvas.drawFastVLine(x + 2, y + 7, 2, COL_ORANGE);
+  canvas.drawFastVLine(x + 5, y + 7, 2, COL_ORANGE);
+  canvas.drawFastVLine(x + 8, y + 7, 2, COL_ORANGE);
+  // slash
+  canvas.drawLine(x, y + 7, x + 9, y, COL_ORANGE);
+  canvas.drawLine(x, y + 8, x + 9, y + 1, COL_ORANGE);
+}
+
+static void clearSnapshot() {
+  snap = SW3518::Snapshot{};
+  lastProtocol = SW3518::Protocol::None;
 }
 
 static void drawMain() {
@@ -433,10 +453,6 @@ static void prevPage() {
 
 static void drawFrame() {
   canvas.fillScreen(COL_BLACK);
-  if (!chargerOk) {
-    drawMissing();
-    return;
-  }
   switch (page) {
     case Page::Main: drawMain(); break;
     case Page::UsbC: drawPort(true); break;
@@ -544,31 +560,37 @@ void loop() {
   serviceBtn(btnA, onAShort, onALong);
   serviceBtn(btnB, onBShort, onBLong);
 
+  static uint32_t lastProbeMs = 0;
   if (!chargerOk) {
-    if (now - lastUiMs >= 1000) {
-      lastUiMs = now;
+    if (now - lastProbeMs >= 1000) {
+      lastProbeMs = now;
       chargerOk = charger.probe();
-      if (chargerOk) charger.begin(PIN_I2C_SDA, PIN_I2C_SCL, 100000);
-      drawFrame();
+      if (chargerOk) {
+        charger.begin(PIN_I2C_SDA, PIN_I2C_SCL, 100000);
+      } else {
+        clearSnapshot();
+      }
     }
-    return;
   }
 
   if (now - lastUiMs >= kUiMs) {
     lastUiMs = now;
-    if (charger.readSnapshot(snap)) {
-      if (snap.protocol != lastProtocol) {
-        lastProtocol = snap.protocol;
-        protoFlashUntil = now + 2000;
-        hapticPulse(35, 180);
+    if (chargerOk) {
+      if (charger.readSnapshot(snap)) {
+        if (snap.protocol != lastProtocol) {
+          lastProtocol = snap.protocol;
+          protoFlashUntil = now + 2000;
+          hapticPulse(35, 180);
+        }
+        updateSession(now);
+        if (now - lastHistPushMs >= histPeriodMs) {
+          lastHistPushMs = now;
+          pushHistory();
+        }
+      } else {
+        chargerOk = false;
+        clearSnapshot();
       }
-      updateSession(now);
-      if (now - lastHistPushMs >= histPeriodMs) {
-        lastHistPushMs = now;
-        pushHistory();
-      }
-    } else {
-      chargerOk = false;
     }
     drawFrame();
   }

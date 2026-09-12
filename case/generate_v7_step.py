@@ -162,63 +162,46 @@ def build_base(L: dict) -> cq.Workplane:
     )
     base = cut_from_top(base, hs_cut)
 
-    # Port tunnels
-    barrel_h = barrel["body_l_w_h_mm"][2]
-    barrel_w = barrel["body_l_w_h_mm"][1]
-    barrel_z = solid_h - barrel_h / 2 - 0.5
-    # +X barrel body pocket + OD tunnel
-    base = base.cut(
-        cq.Workplane("XY")
-        .workplane(offset=barrel_z - barrel_h / 2 - 0.6)
-        .center(outer_l / 2 - end_lip / 2, 0)
-        .box(end_lip + barrel["body_l_w_h_mm"][0] + 2, barrel_w + 1.0, barrel_h + 1.2)
-    )
-    base = base.cut(
-        cq.Workplane("YZ")
-        .workplane(offset=outer_l / 2 - end_lip - 2)
-        .center(0, barrel_z)
-        .circle(barrel["od_mm"] / 2 + 0.3)
-        .extrude(end_lip + barrel["past_pcb_edge_mm"] + 10)
-    )
-
-    # -X USB stack housing + A/C openings (C under A)
+    # Port OPEN-TOP U-channels (from PCB plane down) — not closed tunnels.
+    # Barrel +4 mm / USB +2 mm past PCB must drop in from above.
+    barrel_l, barrel_w, barrel_h = barrel["body_l_w_h_mm"]
     uh_w, uh_h = usb["housing_w_h_mm"]
-    ua_w, ua_h = usb["usb_a_w_h_mm"]
-    uc_w, uc_h = usb["usb_c_w_h_mm"]
-    house_z_bot = solid_h - (uh_h + 1)
+    # Depth of U = housing height + small pad under jack; open through top + frame
+    u_extra = frame_h + 0.5  # cut through registration lip if it overlaps ends
+
+    # +X barrel U-slot: ~13×11 housing, open at top, floor below jack
+    barrel_u_depth = barrel_h + 1.0
     base = base.cut(
         cq.Workplane("XY")
-        .workplane(offset=house_z_bot)
-        .center(-(outer_l / 2 - end_lip / 2), 0)
-        .box(end_lip + 12, uh_w + 1.0, uh_h + 1.0)
+        .workplane(offset=solid_h + u_extra)
+        .center(outer_l / 2 - end_lip / 2, 0)
+        .rect(end_lip + 2.0, barrel_w + 1.2)
+        .extrude(-(barrel_u_depth + u_extra))
     )
-    usb_c_z = solid_h - 1.5 - uc_h / 2
+    # Slightly wider outer mouth lead-in (still open-top)
     base = base.cut(
         cq.Workplane("XY")
-        .workplane(offset=usb_c_z - uc_h / 2 - 0.3)
-        .center(-(outer_l / 2 - end_lip / 2), 0)
-        .box(end_lip + 14, uc_w + 0.8, uc_h + 0.6)
-    )
-    usb_a_z = usb_c_z - uc_h / 2 - 0.6 - ua_h / 2
-    base = base.cut(
-        cq.Workplane("XY")
-        .workplane(offset=usb_a_z - ua_h / 2 - 0.3)
-        .center(-(outer_l / 2 - end_lip / 2), 0)
-        .box(end_lip + 14, ua_w + 0.6, ua_h + 0.6)
+        .workplane(offset=solid_h + u_extra)
+        .center(outer_l / 2 - 1.2, 0)
+        .rect(3.0, max(barrel_w, barrel["collar_od_mm"]) + 2.0)
+        .extrude(-(barrel_u_depth + u_extra))
     )
 
-    # Simple outer lead-ins (one-height rectangles, not stepped doors)
+    # -X USB U-slot: ~13.2×12.2 housing stack, open at top
+    usb_u_depth = uh_h + 1.0
     base = base.cut(
         cq.Workplane("XY")
-        .workplane(offset=house_z_bot - 0.5)
-        .center(-(outer_l / 2 - 1.0), 0)
-        .box(2.5, uh_w + 3.0, uh_h + 2.5)
+        .workplane(offset=solid_h + u_extra)
+        .center(-(outer_l / 2 - end_lip / 2), 0)
+        .rect(end_lip + 2.0, uh_w + 1.2)
+        .extrude(-(usb_u_depth + u_extra))
     )
     base = base.cut(
         cq.Workplane("XY")
-        .workplane(offset=barrel_z - barrel_h / 2 - 1)
-        .center(outer_l / 2 - 1.0, 0)
-        .box(2.5, barrel_w + 3.0, barrel_h + 2.5)
+        .workplane(offset=solid_h + u_extra)
+        .center(-(outer_l / 2 - 1.2), 0)
+        .rect(3.0, uh_w + 3.0)
+        .extrude(-(usb_u_depth + u_extra))
     )
 
     # Mount holes through (4)

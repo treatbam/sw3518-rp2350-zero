@@ -22,3 +22,8 @@ Or from repo root (after build):
 ```
 
 Hardware flash still uses `env:rp2350-zero` — do **not** flash the `pico-wokwi` UF2 to a real Zero.
+
+## Display wiring notes
+The `chip-st7735` pins are **SCK / MOSI / CS / DC / RST** (not SCL/SDA).
+Under `WOKWI_SIM`, **DC is GP15** so it does not collide with Pico SPI0’s default MISO on GP16.
+Hardware Zero builds still use DC on **GP16**.

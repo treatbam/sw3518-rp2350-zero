@@ -13,7 +13,7 @@
     {
       "type": "chip-st7735",
       "id": "lcd1",
-      "top": -120,
+      "top": -140,
       "left": 280,
       "attrs": {}
     },
@@ -24,7 +24,8 @@
       "left": 280,
       "attrs": {
         "color": "green",
-        "label": "A"
+        "label": "A",
+        "bounce": "0"
       }
     },
     {
@@ -34,7 +35,8 @@
       "left": 280,
       "attrs": {
         "color": "blue",
-        "label": "B"
+        "label": "B",
+        "bounce": "0"
       }
     },
     {
@@ -60,21 +62,37 @@
   ],
   "connections": [
     [
-      "lcd1:SCL",
-      "pico:GP18",
-      "green",
+      "lcd1:VCC",
+      "pico:3V3",
+      "red",
       [
         "h-20",
-        "v0"
+        "v80"
       ]
     ],
     [
-      "lcd1:SDA",
+      "lcd1:GND",
+      "pico:GND.1",
+      "black",
+      [
+        "h-20",
+        "v100"
+      ]
+    ],
+    [
+      "lcd1:SCK",
+      "pico:GP18",
+      "green",
+      [
+        "h-40"
+      ]
+    ],
+    [
+      "lcd1:MOSI",
       "pico:GP19",
       "violet",
       [
-        "h-20",
-        "v0"
+        "h-40"
       ]
     ],
     [
@@ -82,17 +100,23 @@
       "pico:GP17",
       "blue",
       [
-        "h-20",
-        "v0"
+        "h-40"
       ]
     ],
     [
       "lcd1:DC",
-      "pico:GP16",
+      "pico:GP15",
       "orange",
       [
-        "h-20",
-        "v0"
+        "h-40"
+      ]
+    ],
+    [
+      "lcd1:RST",
+      "pico:GP20",
+      "gray",
+      [
+        "h-40"
       ]
     ],
     [
@@ -104,11 +128,11 @@
       ]
     ],
     [
-      "btnA:2.r",
-      "pico:GND",
+      "btnA:2.l",
+      "pico:GND.2",
       "black",
       [
-        "h20",
+        "h-20",
         "v40"
       ]
     ],
@@ -121,11 +145,11 @@
       ]
     ],
     [
-      "btnB:2.r",
-      "pico:GND",
+      "btnB:2.l",
+      "pico:GND.3",
       "black",
       [
-        "h20",
+        "h-20",
         "v20"
       ]
     ],
@@ -141,13 +165,11 @@
       "r1:1",
       "haptic:A",
       "orange",
-      [
-        "v0"
-      ]
+      []
     ],
     [
       "haptic:C",
-      "pico:GND",
+      "pico:GND.1",
       "black",
       [
         "v20",

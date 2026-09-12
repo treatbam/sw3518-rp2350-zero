@@ -7,7 +7,12 @@
 static const int PIN_TFT_SCK  = 18;
 static const int PIN_TFT_MOSI = 19;
 static const int PIN_TFT_CS   = 17;
+#if defined(WOKWI_SIM) && WOKWI_SIM
+// Pico SPI0 default MISO is GP16 — keep DC off that pin in the sim twin.
+static const int PIN_TFT_DC   = 15;
+#else
 static const int PIN_TFT_DC   = 16;
+#endif
 static const int PIN_TFT_RST  = 20;
 static const int PIN_TFT_BL   = 21;  // backlight; PWM for night dim
 

@@ -522,6 +522,9 @@ static void initDisplay() {
   // earlephilhower SPI0: default SCK=18 MOSI=19 matches our map
   SPI.setSCK(PIN_TFT_SCK);
   SPI.setTX(PIN_TFT_MOSI);
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  SPI.setRX(12);  // write-only TFT; free GP15 for DC
+#endif
   SPI.begin(true);
 
   tft.initR(ST7735_INIT_TAB);

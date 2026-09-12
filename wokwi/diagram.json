@@ -190,6 +190,6 @@
     ]
   ],
   "dependencies": {
-    "chip-st7735": "github:martysweet/st7735-wokwi-chip@1.0.1"
+    "chip-st7735": "github:martysweet/st7735-wokwi-chip@1.0.4"
   }
 }

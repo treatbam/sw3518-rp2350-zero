@@ -36,7 +36,12 @@ static constexpr uint32_t kSessionEndDebounceMs = 1500;
 
 enum class Page : uint8_t { Main = 0, UsbC = 1, UsbA = 2, Session = 3, Count = 4 };
 
+#if defined(WOKWI_SIM) && WOKWI_SIM
+// Soft SPI — Wokwi custom ST7735 chip is more reliable than HW SPI on Pico sim.
+Adafruit_ST7735 tft(PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_MOSI, PIN_TFT_SCK, PIN_TFT_RST);
+#else
 Adafruit_ST7735 tft(PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_RST);
+#endif
 GFXcanvas16 canvas(kW, kH);
 SW3518 charger;
 
@@ -519,17 +524,26 @@ static void initDisplay() {
   pinMode(PIN_TFT_BL, OUTPUT);
   setBacklight(kBlFull);
 
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  // Soft-SPI path: do not call SPI.begin() (would claim pins / fight bitbang).
+  tft.initR(ST7735_INIT_TAB);
+  tft.setRotation(0);
+  // High-contrast prove-alive (custom chip framebuffer)
+  tft.fillScreen(ST77XX_RED);
+  delay(200);
+  tft.fillScreen(ST77XX_GREEN);
+  delay(200);
+  tft.fillScreen(COL_BLACK);
+#else
   // earlephilhower SPI0: default SCK=18 MOSI=19 matches our map
   SPI.setSCK(PIN_TFT_SCK);
   SPI.setTX(PIN_TFT_MOSI);
-#if defined(WOKWI_SIM) && WOKWI_SIM
-  SPI.setRX(12);  // write-only TFT; free GP15 for DC
-#endif
   SPI.begin(true);
 
   tft.initR(ST7735_INIT_TAB);
   tft.setRotation(0);  // 128 wide x 160 tall portrait
   tft.fillScreen(COL_BLACK);
+#endif
 }
 
 void setup() {

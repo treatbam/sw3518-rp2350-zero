@@ -27,3 +27,15 @@ Hardware flash still uses `env:rp2350-zero` — do **not** flash the `pico-wokwi
 The `chip-st7735` pins are **SCK / MOSI / CS / DC / RST** (not SCL/SDA).
 Under `WOKWI_SIM`, **DC is GP15** so it does not collide with Pico SPI0’s default MISO on GP16.
 Hardware Zero builds still use DC on **GP16**.
+
+## Still blank?
+
+1. **Build before simulate** (Wokwi needs the UF2 on disk):
+   ```bash
+   pio run -e pico-wokwi
+   ls .pio/build/pico-wokwi/firmware.uf2
+   ```
+2. Pull latest `diagram.json` — ST7735 pins are **SCK/MOSI/DC/RST** (DC = **GP15** in sim).
+3. Open the **Wokwi** output / serial panel — you should see `ST7735 Driver Chip Initialized` and `sw3518-rp2350-zero`.
+4. On boot the sim flashes **red then green** briefly (soft-SPI prove-alive). If you never see that, the firmware isn’t loading or SPI isn’t reaching the chip.
+5. Hardware Zero is unchanged (HW SPI, DC=GP16). Don’t flash `pico-wokwi` UF2 to a real RP2350-Zero.

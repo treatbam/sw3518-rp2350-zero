@@ -14,3 +14,5 @@ include/secrets.h
 *.pem
 *.key
 .env
+__pycache__/
+*.pyc

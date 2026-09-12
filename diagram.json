@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "author": "treatbam / Code Troubleshooter",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-pi-pico",
+      "id": "pico",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "chip-st7735",
+      "id": "lcd1",
+      "top": -120,
+      "left": 280,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnA",
+      "top": 220,
+      "left": 280,
+      "attrs": {
+        "color": "green",
+        "label": "A"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnB",
+      "top": 280,
+      "left": 280,
+      "attrs": {
+        "color": "blue",
+        "label": "B"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "haptic",
+      "top": 220,
+      "left": 400,
+      "attrs": {
+        "color": "orange",
+        "label": "HAPTIC"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 250,
+      "left": 380,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "lcd1:SCL",
+      "pico:GP18",
+      "green",
+      [
+        "h-20",
+        "v0"
+      ]
+    ],
+    [
+      "lcd1:SDA",
+      "pico:GP19",
+      "violet",
+      [
+        "h-20",
+        "v0"
+      ]
+    ],
+    [
+      "lcd1:CS",
+      "pico:GP17",
+      "blue",
+      [
+        "h-20",
+        "v0"
+      ]
+    ],
+    [
+      "lcd1:DC",
+      "pico:GP16",
+      "orange",
+      [
+        "h-20",
+        "v0"
+      ]
+    ],
+    [
+      "btnA:1.l",
+      "pico:GP6",
+      "green",
+      [
+        "h-40"
+      ]
+    ],
+    [
+      "btnA:2.r",
+      "pico:GND",
+      "black",
+      [
+        "h20",
+        "v40"
+      ]
+    ],
+    [
+      "btnB:1.l",
+      "pico:GP7",
+      "blue",
+      [
+        "h-40"
+      ]
+    ],
+    [
+      "btnB:2.r",
+      "pico:GND",
+      "black",
+      [
+        "h20",
+        "v20"
+      ]
+    ],
+    [
+      "pico:GP9",
+      "r1:2",
+      "orange",
+      [
+        "h20"
+      ]
+    ],
+    [
+      "r1:1",
+      "haptic:A",
+      "orange",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "haptic:C",
+      "pico:GND",
+      "black",
+      [
+        "v20",
+        "h-40"
+      ]
+    ],
+    [
+      "pico:GP0",
+      "$serialMonitor:RX",
+      "",
+      []
+    ],
+    [
+      "pico:GP1",
+      "$serialMonitor:TX",
+      "",
+      []
+    ]
+  ],
+  "dependencies": {
+    "chip-st7735": "github:martysweet/st7735-wokwi-chip@1.0.1"
+  }
+}

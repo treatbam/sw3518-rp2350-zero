@@ -1,0 +1,12 @@
+# Wokwi for VS Code — simulate the portable charger UI.
+# NOTE: Wokwi does not ship an RP2350 part yet. This uses Raspberry Pi Pico
+# (RP2040) with the same GPIO numbers + WOKWI_SIM fake SW3518 data.
+#
+# Build first:
+#   pio run -e pico-wokwi
+# Then open diagram.json and start Wokwi (or: wokwi-cli).
+
+[wokwi]
+version = 1
+firmware = '.pio/build/pico-wokwi/firmware.uf2'
+elf = '.pio/build/pico-wokwi/firmware.elf'

@@ -1,4 +1,5 @@
 #include "sw3518.h"
+#include <math.h>
 
 namespace {
 constexpr uint8_t REG_FCX_STATUS = 0x06;
@@ -20,6 +21,12 @@ constexpr uint8_t I2C_CTRL_VIN_ADC_EN = 0x02;
 }  // namespace
 
 bool SW3518::begin(int sda, int scl, uint32_t hz) {
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  (void)sda; (void)scl; (void)hz;
+  present_ = true;
+  return true;
+#else
+
 #if defined(ESP32) || defined(ARDUINO_ARCH_ESP32)
   wire_.begin(sda, scl, hz);
 #else
@@ -36,11 +43,17 @@ bool SW3518::begin(int sda, int scl, uint32_t hz) {
     delay(5);
   }
   return present_;
+#endif
 }
 
 bool SW3518::probe() {
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  return true;
+#else
+
   wire_.beginTransmission(kAddr);
   return wire_.endTransmission() == 0;
+#endif
 }
 
 bool SW3518::writeReg(uint8_t reg, uint8_t val) {
@@ -143,6 +156,23 @@ const char* SW3518::protocolName(Protocol p) {
 }
 
 bool SW3518::readSnapshot(Snapshot& s) {
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  // Canned live-looking values so UI pages animate in Wokwi (no real SW3518 chip).
+  const uint32_t t = millis();
+  const float wave = 0.5f + 0.5f * sinf(t / 900.0f);
+  s.vin_mv = 12000;
+  s.vout_mv = 9000;
+  s.ic_ma = (uint16_t)(800 + 600 * wave);
+  s.ia_ma = (uint16_t)(200 + 150 * (1.0f - wave));
+  s.protocol = Protocol::PdFix;
+  s.pd_ver = 2;
+  s.power_a_w = (s.vout_mv / 1000.0f) * (s.ia_ma / 1000.0f);
+  s.power_c_w = (s.vout_mv / 1000.0f) * (s.ic_ma / 1000.0f);
+  s.power_total_w = s.power_a_w + s.power_c_w;
+  s.ok = true;
+  return true;
+#else
+
   s.ok = false;
   if (!readVinMv(s.vin_mv)) return false;
   if (!readVoutMv(s.vout_mv)) return false;
@@ -157,4 +187,5 @@ bool SW3518::readSnapshot(Snapshot& s) {
   s.power_total_w = s.power_a_w + s.power_c_w;
   s.ok = true;
   return true;
+#endif
 }

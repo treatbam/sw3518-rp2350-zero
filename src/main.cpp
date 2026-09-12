@@ -25,6 +25,11 @@ static constexpr int kW = 128;
 static constexpr int kH = 160;
 static constexpr int kStatusBarH = 12;
 static constexpr uint32_t kUiMs = 200;
+#if defined(WOKWI_SIM) && WOKWI_SIM
+static constexpr uint32_t kUiMsEffective = 500;  // soft SPI is slow
+#else
+static constexpr uint32_t kUiMsEffective = kUiMs;
+#endif
 static constexpr uint32_t kNightIdleMs = 90000;
 static constexpr float kLoadMa = 50.0f;
 static constexpr int kBlFull = 255;
@@ -39,10 +44,13 @@ enum class Page : uint8_t { Main = 0, UsbC = 1, UsbA = 2, Session = 3, Count = 4
 #if defined(WOKWI_SIM) && WOKWI_SIM
 // Soft SPI — Wokwi custom ST7735 chip is more reliable than HW SPI on Pico sim.
 Adafruit_ST7735 tft(PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_MOSI, PIN_TFT_SCK, PIN_TFT_RST);
+// Draw UI straight to the panel (full-frame RGB bitmap over soft SPI is too slow).
+Adafruit_ST7735& canvas = tft;
 #else
 Adafruit_ST7735 tft(PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_RST);
-#endif
 GFXcanvas16 canvas(kW, kH);
+#endif
+
 SW3518 charger;
 
 Page page = Page::Main;
@@ -465,7 +473,9 @@ static void drawFrame() {
     case Page::Session: drawSession(); break;
     default: drawMain(); break;
   }
+#if !(defined(WOKWI_SIM) && WOKWI_SIM)
   tft.drawRGBBitmap(0, 0, canvas.getBuffer(), kW, kH);
+#endif
 }
 
 // --- simple button grammar (no OneButton dep) ---
@@ -560,7 +570,9 @@ void setup() {
   initDisplay();
   canvas.fillScreen(COL_BLACK);
   gfxText(canvas, kW / 2, kH / 2 - 6, "SW3518 Zero", COL_CYAN, COL_BLACK, 1, true);
+#if !(defined(WOKWI_SIM) && WOKWI_SIM)
   tft.drawRGBBitmap(0, 0, canvas.getBuffer(), kW, kH);
+#endif
 
   chargerOk = charger.begin(PIN_I2C_SDA, PIN_I2C_SCL, 100000);
   Serial.printf("SW3518 %s @0x%02X SDA=%d SCL=%d\n", chargerOk ? "OK" : "MISSING",
@@ -590,7 +602,7 @@ void loop() {
     }
   }
 
-  if (now - lastUiMs >= kUiMs) {
+  if (now - lastUiMs >= kUiMsEffective) {
     lastUiMs = now;
     if (chargerOk) {
       if (charger.readSnapshot(snap)) {

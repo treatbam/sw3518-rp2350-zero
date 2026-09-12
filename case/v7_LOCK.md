@@ -20,6 +20,11 @@ base · mid · lid · tft_tray · optional TPU button pad · optional Zero retai
 | Button holes | Ø4.2 aligned pair beside bezel |
 | PETG pocket clear | ~0.25 / side |
 | Wall / gap | 1.6 / 0.40 |
+| Port mouths | **Open-top U-slots** from PCB plane (USB −X ~13.2×12.2, barrel +X ~13×11) — NOT closed tunnels |
+| Assembly | Top-drop PCB-up; caps locate; ports drop through U-slots |
+
+## Port cuts (do not regress)
+USB/−X and barrel/+X are **open-top U-channels** from the PCB plane down so +2/+4 mm overhangs top-drop. Glove wells stay closed.
 
 ## Print gate
 1. Base only → dry-fit SW3518 glove  

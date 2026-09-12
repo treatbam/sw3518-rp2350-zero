@@ -18,7 +18,7 @@
       "bbox_mm": [
         66.6,
         40.0,
-        3.8
+        4.4
       ],
       "step": "v7_mid.step",
       "stl": "v7_mid.stl"
@@ -26,9 +26,9 @@
     {
       "name": "lid",
       "bbox_mm": [
-        66.6,
+        66.61,
         38.64,
-        3.2
+        3.21
       ],
       "step": "v7_lid.step",
       "stl": "v7_lid.stl"

@@ -21,15 +21,36 @@ def load_lock():
 
 
 def export_part(solid: cq.Workplane, name: str):
+    import numpy as np
+    import trimesh
+
     OUT.mkdir(parents=True, exist_ok=True)
-    # CadQuery Workplane -> Shape
     shape = solid.val()
+    try:
+        solids = shape.Solids()
+        if len(solids) > 1:
+            fused = solids[0]
+            for s in solids[1:]:
+                fused = fused.fuse(s)
+            shape = fused
+        shape = shape.fix()
+    except Exception:
+        pass
     step = OUT / f"v7_{name}.step"
     stl = OUT / f"v7_{name}.stl"
     cq.exporters.export(shape, str(step))
-    cq.exporters.export(shape, str(stl))
+    # Tessellate via OCCT then write through trimesh (cleaner merges than raw CQ STL)
+    verts, faces = shape.tessellate(0.04, 0.15)
+    v = np.array([[p.x, p.y, p.z] for p in verts], dtype=float)
+    f = np.array(faces, dtype=np.int64)
+    tm = trimesh.Trimesh(vertices=v, faces=f, process=True)
+    trimesh.repair.fix_normals(tm)
+    tm.export(str(stl))
     bb = shape.BoundingBox()
-    print(f"  {name}: {bb.xlen:.2f} x {bb.ylen:.2f} x {bb.zlen:.2f} mm -> {step.name} + {stl.name}")
+    print(
+        f"  {name}: {bb.xlen:.2f} x {bb.ylen:.2f} x {bb.zlen:.2f} mm "
+        f"watertight={tm.is_watertight} volume_ok={tm.is_volume} -> {step.name} + {stl.name}"
+    )
     return shape
 
 
@@ -68,42 +89,41 @@ def build_base(L: dict) -> cq.Workplane:
                  barrel["body_l_w_h_mm"][2] + 1.0)
     solid_h = floor + well_pad + well_z  # top of solid = PCB underside plane
 
-    # Origin: PCB center at XY=0; base top at Z=solid_h; solid grows -Z then we flip for print
-    # Build with Z=0 at bottom (print orientation): solid_h is top.
+    # Origin: PCB center at XY=0; Z=0 at bottom print face; solid_h is top (PCB underside).
+    # Build outer profile with -Y thumb flat in 2D so fillets stay manifold.
+    thumb = 1.6
+    y_flat = -outer_w / 2 + thumb
+    # Polygon: rounded-rect approx via points + later fillet only uncut corners is hard;
+    # use rect extrude, fillet, THEN a soft thumb chamfer that doesn't break shell:
+    # Hard-edged outer (no fillet) — PETG glove gate; keeps STL manifold under port booleans
     base = (
         cq.Workplane("XY")
         .rect(outer_l, outer_w)
         .extrude(solid_h)
-        .edges("|Z")
-        .fillet(corner_r)
     )
-
-    # Thumb flat on -Y (clean chamfer cut)
-    thumb = 1.6
+    # Thumb flat on -Y
     base = base.cut(
         cq.Workplane("XY")
-        .center(0, -outer_w / 2 + thumb / 2 - 0.01)
+        .center(0, -outer_w / 2 + thumb / 2)
         .box(outer_l + 2, thumb + 0.02, solid_h + 2)
     )
 
-    # Registration frame outside PCB footprint (thin wall lip above solid top)
+    # Registration frame outside PCB footprint (lip above solid top)
     frame_h = pcb_t + 0.6
     frame_t = 1.2
     pcb_clear_l = pcb_l + 2 * gap
     pcb_clear_w = pcb_w + 2 * gap
-    outer_frame = (
+    # Single ring via 2D extrude cut — cleaner than union+cut overlap
+    frame = (
         cq.Workplane("XY")
         .workplane(offset=solid_h)
         .rect(pcb_clear_l + 2 * frame_t, pcb_clear_w + 2 * frame_t)
         .extrude(frame_h)
-    )
-    inner_frame = (
-        cq.Workplane("XY")
-        .workplane(offset=solid_h - 0.05)
+        .faces(">Z").workplane()
         .rect(pcb_clear_l, pcb_clear_w)
-        .extrude(frame_h + 0.2)
+        .cutThruAll()
     )
-    base = base.union(outer_frame).cut(inner_frame)
+    base = base.union(frame)
 
     # Glove wells — centers from PCB center (lock)
     # Cut from above top plane downward
@@ -215,12 +235,13 @@ def build_base(L: dict) -> cq.Workplane:
             .extrude(solid_h + frame_h + 4)
         )
 
-    # Flex / I2C channel notch on +Y rim (clean rectangle)
+    # Flex / I2C channel notch on +Y rim — match lock ≥10×3 path into mid
+    flex_w, flex_h = L.get("wiring", {}).get("flex_channel_min_w_h_mm", [10.0, 3.0])
     base = base.cut(
         cq.Workplane("XY")
         .workplane(offset=solid_h - 0.1)
         .center(6.0, outer_w / 2 - 1.0)
-        .box(14.0, wall + 4.0, frame_h + 2.0)
+        .box(max(flex_w, 10.0) + 4.0, wall + 4.0, max(frame_h, flex_h) + 2.0)
     )
 
     return base
@@ -239,7 +260,9 @@ def build_mid(L: dict) -> cq.Workplane:
     end_lip = max(barrel["past_pcb_edge_mm"], usb["past_pcb_edge_mm"]) + 0.8
     outer_l = pcb_l + 2 * end_lip
     outer_w = max(tft_w, pcb_w) + 2 * wall + 2 * gap + 2.0
-    mid_t = 2.6
+    # mid_t must be ≥ flex channel height (lock ≥3.0)
+    flex_w, flex_h = L.get("wiring", {}).get("flex_channel_min_w_h_mm", [10.0, 3.0])
+    mid_t = max(3.2, flex_h + 0.2)
     click_h, click_t = 1.2, 0.9
     corner_r = 3.0
     thumb = 1.6
@@ -328,12 +351,23 @@ def build_mid(L: dict) -> cq.Workplane:
             .extrude(hap["well_depth_mm"] + 0.2)
         )
 
-    # Flex exit +Y
+    # Flex exit +Y — lock ≥10×3 mm through outer wall (full mid height)
+    ch_w = max(flex_w, 10.0) + 2.0  # 12 mm wide
+    ch_h = max(flex_h, 3.0)         # ≥3 mm tall
+    # Place tunnel centered in mid thickness so aperture is full ch_h on +Y face
+    z0 = (mid_t - ch_h) / 2
     mid = mid.cut(
         cq.Workplane("XY")
-        .workplane(offset=-0.5)
-        .center(6.0, outer_w / 2 - 2.5)
-        .box(12.0, 5.0, mid_t + click_h + 2)
+        .workplane(offset=z0 - 0.05)
+        .center(6.0, outer_w / 2 - 2.0)
+        .box(ch_w, 8.0, ch_h + 0.1)
+    )
+    # Also clear click-lip over the same span so lid slack isn't pinched
+    mid = mid.cut(
+        cq.Workplane("XY")
+        .workplane(offset=mid_t - 0.05)
+        .center(6.0, outer_w / 2 - 2.0)
+        .box(ch_w, 8.0, click_h + 0.2)
     )
 
     # Mount holes

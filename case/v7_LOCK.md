@@ -45,3 +45,5 @@ USB/−X and barrel/+X are **open-top U-channels** from the PCB plane down so +2
 Flex channel ≥ **10 × 3 mm** on +Y; **~25 mm** slack so lid lifts off without yanking joints.
 Do not invade the 57×22 PCB envelope except glove wells + port tunnels.
 
+## Handedness (2026-09-12)
+Well centers **Y-flipped** vs first lock — board seats **components-down**; USB/−X and barrel/+X unchanged.

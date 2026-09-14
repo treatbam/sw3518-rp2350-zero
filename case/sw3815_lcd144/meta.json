@@ -1,25 +1,19 @@
 {
-  "lcd_mm": [
-    29.75,
-    43.5,
-    4.8
-  ],
-  "pocket_face": "+X long side",
-  "lcd_orientation": "width along Y, length along Z",
+  "role": {
+    "base": "recessed LCD holder (module sits inset)",
+    "lid": "cosmetic bezel only \u2014 no buttons"
+  },
   "outer_mm": [
     28.500001907348633,
-    33.25,
+    33.45000076293945,
     57.20000076293945
   ],
-  "pocket_depth_mm": 5.6,
+  "pocket_depth_mm": 5.8999999999999995,
+  "pocket_clearance_per_side_mm": 0.45,
+  "inset_below_rim_mm": 0.8,
   "window_mm": [
-    21.419999999999998,
-    31.32
+    27.75,
+    39.5
   ],
-  "button_d_mm": 4.2,
-  "stretch_scale_xyz": [
-    1.0,
-    1.1666665105094896,
-    1.0
-  ]
+  "buttons": null
 }

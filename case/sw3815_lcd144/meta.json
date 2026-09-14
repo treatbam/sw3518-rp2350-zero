@@ -1,33 +1,25 @@
 {
-  "source_case": "sw3815case.stl",
-  "lcd": "1.44_SPI_LCD.stp",
   "lcd_mm": [
     29.75,
     43.5,
     4.8
   ],
-  "stretch_scale_xy": [
-    1.166666588588073,
-    1.6491225862840906
-  ],
+  "pocket_face": "+X long side",
+  "lcd_orientation": "width along Y, length along Z",
   "outer_mm": [
+    28.500001907348633,
     33.25,
-    47.0,
     57.20000076293945
   ],
-  "pocket_depth_mm": 5.8,
+  "pocket_depth_mm": 5.6,
   "window_mm": [
-    21.4,
-    31.3
+    21.419999999999998,
+    31.32
   ],
   "button_d_mm": 4.2,
-  "notes": "Stretched X for LCD width, Y for LCD length; pocket on +Z end; lid with window + 2 aligned tact holes; lid refined: full LCD recess + click lip + aligned \u00d84.2 + STEP export",
-  "lid_refine": "2026-09-14 Creative CAD Master",
-  "lcd_recess_mm": [
-    30.35,
-    44.1
-  ],
-  "petg_clear_per_side_mm": 0.3,
-  "lid_h_mm": 3.6,
-  "click_lip": true
+  "stretch_scale_xyz": [
+    1.0,
+    1.1666665105094896,
+    1.0
+  ]
 }

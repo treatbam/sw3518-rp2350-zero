@@ -1,6 +1,6 @@
 # sw3518-rp2350-zero
 
-Portable **SW3518** USB charger meter on **Waveshare RP2350-Zero** with a **1.8″ SPI TFT (128×160 ST7735)**, two momentary buttons, and a small haptic motor.
+Portable **SW3518** USB charger meter on **Waveshare RP2350-Zero** with a **1.4″ SPI TFT (128×128 ST7735S)**, two momentary buttons, and a small haptic motor.
 
 This is the pocket / field sibling of [sw3518-GEEK](https://github.com/treatbam/sw3518-GEEK). **GEEK stays the Wi‑Fi / MQTT / radio bench unit** — this firmware has **no Wi‑Fi, MQTT, web, BLE, or radio**.
 
@@ -10,13 +10,13 @@ MIT licensed.
 
 | Page | Contents |
 |------|----------|
-| **MAIN** | Large total W (text size 3), tight Vin/Vout + C/A row, load-share, tall bottom sparklines |
-| **C** | USB-C zoom (large W, V/A, peaks, ~50px sparkline) |
+| **MAIN** | Large total W (text size 3), tight Vin/Vout + C/A row, load-share, compact C/A sparklines |
+| **C** | USB-C zoom (large W, V/A, peaks, ~42px sparkline) |
 | **A** | USB-A zoom |
 | **S** | Compact PEAK/AVG/ENERGY grid, then C/A spark bands |
 
 - Status crumbs along the top (`M C A S`) + live/idle pip (short labels so nothing overflows 128px)
-- Portrait **128x160** layouts tuned for density (not cramped GEEK leftovers); ASCII-only TFT strings
+- Square **128×128** layouts packed for the 1.4″ panel; ASCII-only TFT strings
 - Session tracking in RAM (charged ms while load present, mWh, peaks) — no NVS required for MVP. I2C loss **pauses** energy (does not bill the outage). Host tests: `make -C tests test`.
 - Haptic pulse on protocol change, page enter, session clear, and A-long test
 - Night dim: backlight PWM drops after ~90 s idle; any button wakes it
@@ -52,29 +52,23 @@ Edit `include/pins.h` (also summarized here).
 
 ## Display / ST7735 init
 
-Assumes a common **1.8″ 128×160** module driven by **Adafruit_ST7735**.
+Assumes a **1.4″ / 1.44″ 128×128** ST7735S module driven by **Adafruit_ST7735**.
 
-Default init tab:
+Default init tab (sets 128 height + column/row start — do **not** use the 1.8″ BLACKTAB/GREENTAB here):
 
 ```cpp
-#define ST7735_INIT_TAB INITR_BLACKTAB
+#define ST7735_INIT_TAB INITR_144GREENTAB
 ```
 
-If the image is offset, mirrored, or colors look wrong, change the define in `include/pins.h` (or add `-DST7735_INIT_TAB=INITR_GREENTAB` in `platformio.ini`) and try:
+If the image is shifted a few pixels, try `INITR_HALLOWING` (also 128×128) in `include/pins.h`. Flip rotation with `1`/`2`/`3` in `initDisplay()` if the panel is mounted rotated.
 
-- `INITR_BLACKTAB` (default)
-- `INITR_GREENTAB` / `INITR_18GREENTAB`
-- `INITR_REDTAB`
-
-Rotation is portrait (`setRotation(0)` → 128×160). Flip with `1`/`2`/`3` in `initDisplay()` if your panel mounting differs.
-
-A full RGB565 canvas (`128×160×2 ≈ 40 KB`) is used; RP2350 SRAM (~520 KB) is fine.
+A full RGB565 canvas (`128×128×2 = 32 KB`) is used; RP2350 SRAM (~520 KB) is fine.
 
 ## BOM notes
 
 - **Waveshare RP2350-Zero**
 - **SW3518 / SW3518S** charger module with I2C (0x3C)
-- **1.8″ SPI ST7735** 128×160 TFT
+- **1.4″ SPI ST7735S** 128×128 TFT
 - **2×** momentary NO buttons to GND
 - **Haptic / coin vibration motor** driven by an **N‑channel MOSFET** (logic-level gate from GP9), **flyback diode** across the motor, motor supply from 3V3 or 5V as appropriate for the motor (do **not** power the motor through the GPIO)
 
@@ -124,14 +118,14 @@ CDC serial is enabled (`ARDUINO_USB_CDC_ON_BOOT`) for `Serial` over the Zero’s
 - Same register / ADC math (including A/C swap at ADC types 3/4)
 - `Wire.begin` is portable: ESP32 uses `(sda,scl,hz)`; RP2040/RP2350 uses `setSDA` / `setSCL` + `begin` + `setClock`
 
-## UI notes (128x160)
+## UI notes (128×128)
 
-Layouts in `src/main.cpp` are tuned for the small portrait panel:
+Layouts in `src/main.cpp` are packed for the square 1.4″ panel (32px shorter than the old 1.8″ 160-tall UI):
 
 - **Status:** short crumbs `M C A S`, live pip on the right
-- **Main:** size-3 watts, compact Vin/Vout/C/A, load-share close under amps, leftover height for taller C/A sparklines; idle hints as a small footer
-- **Port (C/A):** large W, V/A row, peaks on one line, sparkline uses remaining bottom (~50px+)
-- **Session:** compact PEAK/AVG/ENERGY grid, then C and A spark bands that finish above y=160 (no clip)
+- **Main:** size-3 watts kept; Vin/Vout/C/A + load-share; one-line session footer; C/A sparklines ~28px
+- **Port (C/A):** large W, V/A row, peaks on one line, sparkline ~42px
+- **Session:** PEAK/AVG/ENERGY grid, then C and A spark bands that finish above y=128
 - TFT strings are ASCII-only (no em dashes)
 
 Button grammar is unchanged (see table above).

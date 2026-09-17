@@ -23,8 +23,31 @@ static constexpr uint16_t COL_LIGHTGREY = 0xC618;
 static constexpr uint16_t COL_DIM = 0x4208;
 
 static constexpr int kW = 128;
-static constexpr int kH = 160;
+static constexpr int kH = 128;
 static constexpr int kStatusBarH = 12;
+
+// 128-tall pack (size-3 watts kept; sparks and session footer give up the 32px).
+static constexpr int kYHdr = 14;
+static constexpr int kYWatts = 24;       // size 3 → 24..47
+static constexpr int kYMainVin = 50;
+static constexpr int kYMainAmps = 60;
+static constexpr int kYShareBar = 78;    // label at y-10
+static constexpr int kYMainSes = 86;
+static constexpr int kYMainSpark = 96;
+static constexpr int kMainSparkH = 28;   // 96..124
+static constexpr int kYPortVA = 50;
+static constexpr int kYPortPk = 62;
+static constexpr int kYPortChg = 72;
+static constexpr int kYPortSpark = 82;
+static constexpr int kPortSparkH = 42;   // 82..124
+static constexpr int kYSesGrid = 26;
+static constexpr int kYSesVals = 38;
+static constexpr int kYSesVpk = 56;
+static constexpr int kYSesCLbl = 66;
+static constexpr int kYSesCSpark = 76;
+static constexpr int kSesSparkH = 18;
+static constexpr int kYSesALbl = 98;
+static constexpr int kYSesASpark = 108;
 static constexpr uint32_t kUiMs = 200;
 static constexpr uint32_t kNightIdleMs = 90000;
 static constexpr int kBlFull = 255;
@@ -210,48 +233,43 @@ static void drawMain() {
   const char* proto = SW3518::protocolName(snap.protocol);
 
   // Header row under status bar
-  gfxText(canvas, 4, 14, charging ? "LIVE" : "IDLE", charging ? COL_GREEN : COL_LIGHTGREY,
+  gfxText(canvas, 4, kYHdr, charging ? "LIVE" : "IDLE", charging ? COL_GREEN : COL_LIGHTGREY,
           COL_BLACK, 1);
-  if (flash) canvas.fillRect(kW / 2 - 40, 14, 80, 10, COL_YELLOW);
-  gfxText(canvas, kW / 2, 14, proto, flash ? COL_BLACK : COL_YELLOW,
+  if (flash) canvas.fillRect(kW / 2 - 40, kYHdr, 80, 10, COL_YELLOW);
+  gfxText(canvas, kW / 2, kYHdr, proto, flash ? COL_BLACK : COL_YELLOW,
           flash ? COL_YELLOW : COL_BLACK, 1, true);
 
   char buf[40];
-  // Size-3 total watts (fits ~"100.0W" on 128px)
   snprintf(buf, sizeof(buf), "%.1fW", snap.power_total_w);
-  gfxText(canvas, kW / 2, 28, buf, COL_WHITE, COL_BLACK, 3, true);
+  gfxText(canvas, kW / 2, kYWatts, buf, COL_WHITE, COL_BLACK, 3, true);
 
-  // Tight Vin/Vout + C/A amp row
   snprintf(buf, sizeof(buf), "Vin%.1f", snap.vin_mv / 1000.0f);
-  gfxText(canvas, 4, 56, buf, COL_LIGHTGREY, COL_BLACK, 1);
+  gfxText(canvas, 4, kYMainVin, buf, COL_LIGHTGREY, COL_BLACK, 1);
   snprintf(buf, sizeof(buf), "Vout%.2f", snap.vout_mv / 1000.0f);
-  gfxText(canvas, 66, 56, buf, COL_LIGHTGREY, COL_BLACK, 1);
+  gfxText(canvas, 66, kYMainVin, buf, COL_LIGHTGREY, COL_BLACK, 1);
 
-  gfxText(canvas, 4, 68, "C", COL_YELLOW, COL_BLACK, 1);
+  gfxText(canvas, 4, kYMainAmps, "C", COL_YELLOW, COL_BLACK, 1);
   snprintf(buf, sizeof(buf), "%.2fA", snap.ic_ma / 1000.0f);
-  gfxText(canvas, 14, 68, buf, COL_WHITE, COL_BLACK, 1);
-  gfxText(canvas, 66, 68, "A", COL_MAGENTA, COL_BLACK, 1);
+  gfxText(canvas, 14, kYMainAmps, buf, COL_WHITE, COL_BLACK, 1);
+  gfxText(canvas, 66, kYMainAmps, "A", COL_MAGENTA, COL_BLACK, 1);
   snprintf(buf, sizeof(buf), "%.2fA", snap.ia_ma / 1000.0f);
-  gfxText(canvas, 76, 68, buf, COL_WHITE, COL_BLACK, 1);
+  gfxText(canvas, 76, kYMainAmps, buf, COL_WHITE, COL_BLACK, 1);
 
-  // Load-share tucked close under amps
-  drawLoadShareBar(86);
+  drawLoadShareBar(kYShareBar);
 
-  // Compact footer / session strip, then tall sparklines
   if (session.hasData()) {
     char dur[16];
     formatDuration(session.chargedMs, dur, sizeof(dur));
-    snprintf(buf, sizeof(buf), "%s pk%.0fW avg%.0fW", dur, session.peakW, session.avgW());
-    gfxText(canvas, 4, 98, buf, COL_LIGHTGREY, COL_BLACK, 1);
-    snprintf(buf, sizeof(buf), "%.0fmWh", session.mwh);
-    gfxText(canvas, 4, 108, buf, COL_DARKGREY, COL_BLACK, 1);
+    snprintf(buf, sizeof(buf), "%s %.2fWh pk%.0f", dur, session.mwh / 1000.0f, session.peakW);
+    gfxText(canvas, 4, kYMainSes, buf, COL_LIGHTGREY, COL_BLACK, 1);
   } else {
-    gfxText(canvas, 4, 100, "A=next B=ses B-long=clr", COL_DIM, COL_BLACK, 1);
+    gfxText(canvas, 4, kYMainSes, "A=pg B=ses holdB=clr", COL_DIM, COL_BLACK, 1);
   }
 
-  // Leftover height -> taller C/A sparklines (y=118..158)
-  drawSparkline(canvas, 4, 118, 56, 40, session.histC, COL_YELLOW, session.histCount);
-  drawSparkline(canvas, 68, 118, 56, 40, session.histA, COL_MAGENTA, session.histCount);
+  drawSparkline(canvas, 4, kYMainSpark, 56, kMainSparkH, session.histC, COL_YELLOW,
+                session.histCount);
+  drawSparkline(canvas, 68, kYMainSpark, 56, kMainSparkH, session.histA, COL_MAGENTA,
+                session.histCount);
 }
 
 static void drawPort(bool usbC) {
@@ -263,38 +281,34 @@ static void drawPort(bool usbC) {
   const float peakA = port.peakA;
   const float peakW = port.peakW;
 
-  gfxText(canvas, 4, 14, usbC ? "USB-C" : "USB-A", accent, COL_BLACK, 1);
-  gfxText(canvas, kW / 2, 14, SW3518::protocolName(snap.protocol), COL_LIGHTGREY, COL_BLACK, 1,
+  gfxText(canvas, 4, kYHdr, usbC ? "USB-C" : "USB-A", accent, COL_BLACK, 1);
+  gfxText(canvas, kW / 2, kYHdr, SW3518::protocolName(snap.protocol), COL_LIGHTGREY, COL_BLACK, 1,
           true);
 
   char buf[32];
-  // Large watts
   snprintf(buf, sizeof(buf), "%.2fW", watts);
-  gfxText(canvas, kW / 2, 28, buf, COL_WHITE, COL_BLACK, 3, true);
+  gfxText(canvas, kW / 2, kYWatts, buf, COL_WHITE, COL_BLACK, 3, true);
 
-  // V / A row
   snprintf(buf, sizeof(buf), "%.2fV", snap.vout_mv / 1000.0f);
-  gfxText(canvas, 4, 56, buf, COL_LIGHTGREY, COL_BLACK, 1);
+  gfxText(canvas, 4, kYPortVA, buf, COL_LIGHTGREY, COL_BLACK, 1);
   snprintf(buf, sizeof(buf), "%.2fA", amps);
-  gfxText(canvas, 68, 56, buf, COL_WHITE, COL_BLACK, 1);
+  gfxText(canvas, 68, kYPortVA, buf, COL_WHITE, COL_BLACK, 1);
 
-  // Peaks + charged on one compact line each
   snprintf(buf, sizeof(buf), "pk %.2fA %.1fW", peakA, peakW);
-  gfxText(canvas, 4, 70, buf, COL_LIGHTGREY, COL_BLACK, 1);
+  gfxText(canvas, 4, kYPortPk, buf, COL_LIGHTGREY, COL_BLACK, 1);
 
   char dur[16];
   formatDuration(session.chargedMs, dur, sizeof(dur));
   snprintf(buf, sizeof(buf), "chg %s", dur);
-  gfxText(canvas, 4, 82, buf, COL_DARKGREY, COL_BLACK, 1);
+  gfxText(canvas, 4, kYPortChg, buf, COL_DARKGREY, COL_BLACK, 1);
 
-  // Remaining bottom ~50px sparkline
-  drawSparkline(canvas, 4, 96, kW - 8, 58, usbC ? session.histC : session.histA, accent,
-                session.histCount);
+  drawSparkline(canvas, 4, kYPortSpark, kW - 8, kPortSparkH, usbC ? session.histC : session.histA,
+                accent, session.histCount);
 }
 
 static void drawSession() {
   drawStatusBar();
-  gfxText(canvas, 4, 14, "SESSION", COL_CYAN, COL_BLACK, 1);
+  gfxText(canvas, 4, kYHdr, "SESSION", COL_CYAN, COL_BLACK, 1);
 
   char buf[40], dur[16];
   if (session.hasData()) {
@@ -302,32 +316,32 @@ static void drawSession() {
   } else {
     snprintf(dur, sizeof(dur), "--");
   }
-  gfxText(canvas, kW - 4, 14, dur, COL_WHITE, COL_BLACK, 1, false, true);
+  gfxText(canvas, kW - 4, kYHdr, dur, COL_WHITE, COL_BLACK, 1, false, true);
 
-  // Compact PEAK / AVG / ENERGY grid
   const float wh = session.mwh / 1000.0f;
-  gfxText(canvas, 4, 28, "PEAK", COL_DARKGREY, COL_BLACK, 1);
-  gfxText(canvas, 46, 28, "AVG", COL_DARKGREY, COL_BLACK, 1);
-  gfxText(canvas, 88, 28, "Wh", COL_DARKGREY, COL_BLACK, 1);
+  gfxText(canvas, 4, kYSesGrid, "PEAK", COL_DARKGREY, COL_BLACK, 1);
+  gfxText(canvas, 46, kYSesGrid, "AVG", COL_DARKGREY, COL_BLACK, 1);
+  gfxText(canvas, 88, kYSesGrid, "Wh", COL_DARKGREY, COL_BLACK, 1);
 
   snprintf(buf, sizeof(buf), "%.1f", session.peakW);
-  gfxText(canvas, 4, 40, buf, COL_WHITE, COL_BLACK, 2);
+  gfxText(canvas, 4, kYSesVals, buf, COL_WHITE, COL_BLACK, 2);
   snprintf(buf, sizeof(buf), "%.1f", session.avgW());
-  gfxText(canvas, 46, 40, buf, COL_WHITE, COL_BLACK, 2);
+  gfxText(canvas, 46, kYSesVals, buf, COL_WHITE, COL_BLACK, 2);
   snprintf(buf, sizeof(buf), "%.2f", wh);
-  gfxText(canvas, 88, 40, buf, COL_ORANGE, COL_BLACK, 1);
+  gfxText(canvas, 88, kYSesVals, buf, COL_ORANGE, COL_BLACK, 1);
 
   snprintf(buf, sizeof(buf), "Vpk %.2f", session.peakVoutMv / 1000.0f);
-  gfxText(canvas, 4, 60, buf, COL_LIGHTGREY, COL_BLACK, 1);
+  gfxText(canvas, 4, kYSesVpk, buf, COL_LIGHTGREY, COL_BLACK, 1);
 
-  // C and A spark bands with room (no clip at y=160)
   snprintf(buf, sizeof(buf), "C pk %.1fW @%.2fA", session.portC.peakW, session.portC.ampsAtPeakW);
-  gfxText(canvas, 4, 74, buf, COL_YELLOW, COL_BLACK, 1);
-  drawSparkline(canvas, 4, 86, kW - 8, 28, session.histC, COL_YELLOW, session.histCount);
+  gfxText(canvas, 4, kYSesCLbl, buf, COL_YELLOW, COL_BLACK, 1);
+  drawSparkline(canvas, 4, kYSesCSpark, kW - 8, kSesSparkH, session.histC, COL_YELLOW,
+                session.histCount);
 
   snprintf(buf, sizeof(buf), "A pk %.1fW @%.2fA", session.portA.peakW, session.portA.ampsAtPeakW);
-  gfxText(canvas, 4, 118, buf, COL_MAGENTA, COL_BLACK, 1);
-  drawSparkline(canvas, 4, 130, kW - 8, 28, session.histA, COL_MAGENTA, session.histCount);
+  gfxText(canvas, 4, kYSesALbl, buf, COL_MAGENTA, COL_BLACK, 1);
+  drawSparkline(canvas, 4, kYSesASpark, kW - 8, kSesSparkH, session.histA, COL_MAGENTA,
+                session.histCount);
 }
 
 static void setPage(Page p) {
@@ -423,7 +437,7 @@ static void initDisplay() {
   SPI.begin(true);
 
   tft.initR(ST7735_INIT_TAB);
-  tft.setRotation(0);  // 128 wide x 160 tall portrait
+  tft.setRotation(0);  // 128 x 128
   tft.fillScreen(COL_BLACK);
 }
 

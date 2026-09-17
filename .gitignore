@@ -17,3 +17,6 @@ tests/test_session
 *.pem
 *.key
 .env
+
+# visual brainstorm companion
+.superpowers/

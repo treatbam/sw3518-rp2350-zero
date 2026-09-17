@@ -1,9 +1,9 @@
 #pragma once
 
-// Default pin map — Waveshare RP2350-Zero + 1.8" SPI TFT + SW3518 + buttons + haptic.
+// Default pin map — Waveshare RP2350-Zero + 1.4" 128x128 SPI TFT + SW3518 + buttons + haptic.
 // Change here; rebuild. Documented again in README.
 
-// --- 1.8" ST7735 SPI (SPI0 defaults on Pico family: SCK=18, MOSI=19) ---
+// --- 1.4"/1.44" ST7735S SPI 128x128 (SPI0 defaults on Pico family: SCK=18, MOSI=19) ---
 static const int PIN_TFT_SCK  = 18;
 static const int PIN_TFT_MOSI = 19;
 static const int PIN_TFT_CS   = 17;
@@ -11,10 +11,11 @@ static const int PIN_TFT_DC   = 16;
 static const int PIN_TFT_RST  = 20;
 static const int PIN_TFT_BL   = 21;  // backlight; PWM for night dim
 
-// ST7735 init tab: BLACKTAB is common for 128x160 1.8" modules.
-// Swap if colors/offsets look wrong: INITR_GREENTAB / INITR_REDTAB / INITR_18GREENTAB
+// 128x128 panels need the 144 tab (sets 128 height + col/row start).
+// Do not use INITR_BLACKTAB / INITR_GREENTAB here — those are 128x160 1.8".
+// If the image is shifted a few pixels, try INITR_HALLOWING (also 128x128).
 #ifndef ST7735_INIT_TAB
-#define ST7735_INIT_TAB INITR_BLACKTAB
+#define ST7735_INIT_TAB INITR_144GREENTAB
 #endif
 
 // --- SW3518 I2C ---

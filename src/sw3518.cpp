@@ -1,4 +1,5 @@
 #include "sw3518.h"
+#include <math.h>
 
 namespace {
 constexpr uint8_t REG_FCX_STATUS = 0x06;
@@ -20,6 +21,13 @@ constexpr uint16_t kWireTimeoutMs = 50;
 }  // namespace
 
 void SW3518::startBus(int sda, int scl, uint32_t hz) {
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  (void)sda;
+  (void)scl;
+  (void)hz;
+  busStarted_ = true;
+  return;
+#endif
 #if defined(ESP32) || defined(ARDUINO_ARCH_ESP32)
   wire_.begin(sda, scl, hz);
   wire_.setTimeOut(kWireTimeoutMs);
@@ -36,24 +44,42 @@ void SW3518::startBus(int sda, int scl, uint32_t hz) {
 }
 
 bool SW3518::begin(int sda, int scl, uint32_t hz) {
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  (void)sda;
+  (void)scl;
+  (void)hz;
+  present_ = true;
+  busStarted_ = true;
+  return true;
+#else
   startBus(sda, scl, hz);
   delay(20);
   if (probe()) rearm();
   return present_;
+#endif
 }
 
 bool SW3518::probe() {
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  present_ = true;
+  return true;
+#else
   if (!busStarted_) return false;
   wire_.beginTransmission(kAddr);
   present_ = (wire_.endTransmission() == 0);
   return present_;
+#endif
 }
 
 bool SW3518::rearm() {
   if (!present_) return false;
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  return true;
+#else
   const bool ok = enableVinAdc();
   delay(5);
   return ok;
+#endif
 }
 
 bool SW3518::writeReg(uint8_t reg, uint8_t val) {
@@ -154,6 +180,21 @@ const char* SW3518::protocolName(Protocol p) {
 }
 
 bool SW3518::readSnapshot(Snapshot& s) {
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  const uint32_t t = millis();
+  const float wave = 0.5f + 0.5f * sinf(t / 900.0f);
+  s.vin_mv = 12000;
+  s.vout_mv = 9000;
+  s.ic_ma = (uint16_t)(800 + 600 * wave);
+  s.ia_ma = (uint16_t)(200 + 150 * (1.0f - wave));
+  s.protocol = Protocol::PdFix;
+  s.pd_ver = 2;
+  s.power_a_w = (s.vout_mv / 1000.0f) * (s.ia_ma / 1000.0f);
+  s.power_c_w = (s.vout_mv / 1000.0f) * (s.ic_ma / 1000.0f);
+  s.power_total_w = s.power_a_w + s.power_c_w;
+  s.ok = true;
+  return true;
+#else
   s = Snapshot{};
   if (!present_) return false;
   if (!readVinMv(s.vin_mv)) return false;
@@ -166,4 +207,5 @@ bool SW3518::readSnapshot(Snapshot& s) {
   s.power_total_w = s.power_a_w + s.power_c_w;
   s.ok = true;
   return true;
+#endif
 }

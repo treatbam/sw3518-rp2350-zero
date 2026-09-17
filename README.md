@@ -39,7 +39,7 @@ Edit `include/pins.h` (also summarized here).
 | TFT SCK | **18** | SPI0 |
 | TFT MOSI | **19** | SPI0 |
 | TFT CS | **17** | |
-| TFT DC | **16** | |
+| TFT DC | **16** | GP**15** in Wokwi (`WOKWI_SIM`) so it is not Pico SPI0 MISO |
 | TFT RST | **20** | |
 | TFT BL | **21** | PWM night dim |
 | I2C SDA | **4** | Wire / **I2C0** (RP2350 GP4/5) |
@@ -143,6 +143,23 @@ Matched to the common **DC barrel + stacked USB-A / USB-C** board (I2C pads silk
 
 
 
+
+## Wokwi simulation
+
+Wokwi has **no official RP2350 board** yet. This repo includes a **Pico (RP2040) sim twin** that reuses the same GPIO numbers and UI firmware:
+
+```bash
+pio run -e pico-wokwi
+```
+
+Then open `diagram.json` with the [Wokwi VS Code extension](https://docs.wokwi.com/vscode/getting-started) (see `wokwi.toml` + `wokwi/README.md`).
+
+- ST7735 via custom chip `chip-st7735`
+- Buttons A/B + haptic LED
+- `-DWOKWI_SIM=1` feeds fake SW3518 snapshots (no real I2C charger in the sim)
+
+Flash hardware with `env:rp2350-zero` only — not the Wokwi UF2.
+
 ## Pocket case (v5)
 
 v5.1: **no side USB cut and no through-wall bars**. Flash the Zero with the lid off. Earlier “missing corner” / side bars were a Zero USB-C cut and ledges punching through the walls.
@@ -169,6 +186,23 @@ Outer ~**62.4 × 42.0 × 25.6 mm**.
 Print `case/pocket_bottom.stl` + `case/pocket_lid.stl`. Pad silk `SCK` = I2C SCL.
 **Buttons (v4.2):** on the **lid** beside the screen (A/B), not the long sides. Side wall holes removed. Wire 6×6 tacts under the lid to GP6/GP7.
 
+
+
+## Wokwi simulation
+
+Wokwi has **no official RP2350 board** yet. This repo includes a **Pico (RP2040) sim twin** that reuses the same GPIO numbers and UI firmware:
+
+```bash
+pio run -e pico-wokwi
+```
+
+Then open `diagram.json` with the [Wokwi VS Code extension](https://docs.wokwi.com/vscode/getting-started) (see `wokwi.toml` + `wokwi/README.md`).
+
+- ST7735 via custom chip `chip-st7735`
+- Buttons A/B + haptic LED
+- `-DWOKWI_SIM=1` feeds fake SW3518 snapshots (no real I2C charger in the sim)
+
+Flash hardware with `env:rp2350-zero` only — not the Wokwi UF2.
 
 ## Pocket case
 

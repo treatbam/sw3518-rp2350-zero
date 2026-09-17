@@ -49,6 +49,11 @@ static constexpr int kSesSparkH = 18;
 static constexpr int kYSesALbl = 98;
 static constexpr int kYSesASpark = 108;
 static constexpr uint32_t kUiMs = 200;
+#if defined(WOKWI_SIM) && WOKWI_SIM
+static constexpr uint32_t kUiMsEffective = 500;  // soft SPI is slow
+#else
+static constexpr uint32_t kUiMsEffective = kUiMs;
+#endif
 static constexpr uint32_t kNightIdleMs = 90000;
 static constexpr int kBlFull = 255;
 static constexpr int kBlDim = 64;
@@ -57,8 +62,16 @@ static constexpr uint32_t kDebounceMs = 30;
 
 enum class Page : uint8_t { Main = 0, UsbC = 1, UsbA = 2, Session = 3, Count = 4 };
 
+#if defined(WOKWI_SIM) && WOKWI_SIM
+// Soft SPI — Wokwi custom ST7735 chip is more reliable than HW SPI on Pico sim.
+Adafruit_ST7735 tft(PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_MOSI, PIN_TFT_SCK, PIN_TFT_RST);
+// Draw UI straight to the panel (full-frame RGB bitmap over soft SPI is too slow).
+Adafruit_ST7735& canvas = tft;
+#else
 Adafruit_ST7735 tft(PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_RST);
 GFXcanvas16 canvas(kW, kH);
+#endif
+
 SW3518 charger;
 
 Page page = Page::Main;
@@ -372,7 +385,9 @@ static void drawFrame() {
     case Page::Session: drawSession(); break;
     default: drawMain(); break;
   }
+#if !(defined(WOKWI_SIM) && WOKWI_SIM)
   tft.drawRGBBitmap(0, 0, canvas.getBuffer(), kW, kH);
+#endif
 }
 
 // --- simple button grammar (no OneButton dep) ---
@@ -431,6 +446,17 @@ static void initDisplay() {
   pinMode(PIN_TFT_BL, OUTPUT);
   setBacklight(kBlFull);
 
+#if defined(WOKWI_SIM) && WOKWI_SIM
+  // Soft-SPI path: do not call SPI.begin() (would claim pins / fight bitbang).
+  tft.initR(ST7735_INIT_TAB);
+  tft.setRotation(0);
+  // High-contrast prove-alive (custom chip framebuffer)
+  tft.fillScreen(ST77XX_RED);
+  delay(200);
+  tft.fillScreen(ST77XX_GREEN);
+  delay(200);
+  tft.fillScreen(COL_BLACK);
+#else
   // earlephilhower SPI0: default SCK=18 MOSI=19 matches our map
   SPI.setSCK(PIN_TFT_SCK);
   SPI.setTX(PIN_TFT_MOSI);
@@ -439,6 +465,7 @@ static void initDisplay() {
   tft.initR(ST7735_INIT_TAB);
   tft.setRotation(0);  // 128 x 128
   tft.fillScreen(COL_BLACK);
+#endif
 }
 
 void setup() {
@@ -455,7 +482,9 @@ void setup() {
   initDisplay();
   canvas.fillScreen(COL_BLACK);
   gfxText(canvas, kW / 2, kH / 2 - 6, "SW3518 Zero", COL_CYAN, COL_BLACK, 1, true);
+#if !(defined(WOKWI_SIM) && WOKWI_SIM)
   tft.drawRGBBitmap(0, 0, canvas.getBuffer(), kW, kH);
+#endif
 
   charger.begin(PIN_I2C_SDA, PIN_I2C_SCL, 100000);
   Serial.printf("SW3518 %s @0x%02X SDA=%d SCL=%d\n", charger.present() ? "OK" : "MISSING",
@@ -473,7 +502,7 @@ void loop() {
   serviceBtn(btnB, onBShort, onBLong);
 
   static uint32_t lastProbeMs = 0;
-  if (now - lastUiMs >= kUiMs) {
+  if (now - lastUiMs >= kUiMsEffective) {
     lastUiMs = now;
     if (charger.readSnapshot(snap)) {
       if (snap.protocol != lastProtocol) {

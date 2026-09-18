@@ -10,6 +10,7 @@
 #include "session.h"
 #include "status_led.h"
 #include "sw3518.h"
+#include "isense.h"
 
 // --- colors (RGB565) ---
 static constexpr uint16_t COL_BLACK = 0x0000;
@@ -85,6 +86,7 @@ uint32_t lastHistPushMs = 0;
 bool nightDim = false;
 int blLevel = kBlFull;
 Session session;
+IsenseReading isense{};
 
 // --- haptic (non-blocking PWM burst) ---
 static uint32_t hapticUntil = 0;
@@ -344,8 +346,14 @@ static void drawSession() {
   snprintf(buf, sizeof(buf), "%.2f", wh);
   gfxText(canvas, 88, kYSesVals, buf, COL_ORANGE, COL_BLACK, 1);
 
-  snprintf(buf, sizeof(buf), "Vpk %.2f", session.peakVoutMv / 1000.0f);
-  gfxText(canvas, 4, kYSesVpk, buf, COL_LIGHTGREY, COL_BLACK, 1);
+  if (!isense.plausible) {
+    snprintf(buf, sizeof(buf), "Vpk %.2f Is HI", session.peakVoutMv / 1000.0f);
+  } else if (ISENSE_MOHM > 0.1f) {
+    snprintf(buf, sizeof(buf), "Vpk %.2f Is %.2fA", session.peakVoutMv / 1000.0f, isense.amps);
+  } else {
+    snprintf(buf, sizeof(buf), "Vpk %.2f Is %.0fmV", session.peakVoutMv / 1000.0f, isense.mv);
+  }
+  gfxText(canvas, 4, kYSesVpk, buf, isense.plausible ? COL_LIGHTGREY : COL_ORANGE, COL_BLACK, 1);
 
   snprintf(buf, sizeof(buf), "C pk %.1fW @%.2fA", session.portC.peakW, session.portC.ampsAtPeakW);
   gfxText(canvas, 4, kYSesCLbl, buf, COL_YELLOW, COL_BLACK, 1);
@@ -489,6 +497,7 @@ void setup() {
 
   statusLedBegin();
   statusLedNoteTft(true);  // SPI TFT has no MISO — cannot prove the panel is attached
+  isenseBegin();
   charger.begin(PIN_I2C_SDA, PIN_I2C_SCL, 100000);
   Serial.printf("SW3518 %s @0x%02X SDA=%d SCL=%d\n", charger.present() ? "OK" : "MISSING",
                 (unsigned)SW3518::kAddr, PIN_I2C_SDA, PIN_I2C_SCL);
@@ -528,6 +537,7 @@ void loop() {
       }
       session.onTick(now, nullptr, Link::Lost);
     }
+    isense = isenseRead();
     drawFrame();
     uint8_t faults = STATUS_OK;
     if (!charger.present()) faults |= STATUS_NO_SW3518;

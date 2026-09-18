@@ -15,6 +15,7 @@ C = {
     "btn": (240, 210, 70),
     "hap": (220, 90, 200),
     "led": (80, 200, 90),
+    "adc": (120, 180, 255),
     "free": (55, 55, 60),
 }
 
@@ -25,7 +26,7 @@ FRONT_L = [
     ("29", "", "free"),
     ("28", "", "free"),
     ("27", "", "free"),
-    ("26", "", "free"),
+    ("26", "I-sense ADC", "adc"),
     ("15", "TFT DC", "tft"),
     ("14", "", "free"),
 ]
@@ -167,7 +168,10 @@ def main():
             "Module silk SCK = I2C SCL",
             "not SPI clock.",
             "Share GND with the Zero.",
-            "Do not feed charger  VBUS",
+            "I-sense pad: DMM vs GND first.",
+            "If >0.3V do NOT wire to GPIO.",
+            "OK millivolts: pad-1k-GP26.",
+            "Do not feed charger VBUS",
             "into 3V3.",
         ],
         C["i2c"],

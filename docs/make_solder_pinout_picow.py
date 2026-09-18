@@ -59,7 +59,7 @@ RIGHT = [
     ("GP18", "TFT SCK", "tft"),
     ("GND", "", "gnd"),
     ("GP17", "TFT CS", "tft"),
-    ("GP16", "TFT DC", "tft"),
+    ("GP16", "", "free"),
 ]
 
 
@@ -114,8 +114,9 @@ def main():
     card(40, 870, 320, "1.4in ST7735", [
         "VCC  3V3     GND  GND",
         "SCK  GP18    MOSI GP19",
-        "CS   GP17    DC   GP16",
-        "RST  GP20    BL   GP21",
+        "CS   GP17    RST  GP20",
+        "BL   GP21    (no DC pad = 3-wire)",
+        "If you see A0 or RS, that is DC->GP16",
         "No MISO. Right-rail SPI0.",
     ], C["tft"])
     card(380, 870, 320, "SW3518 I2C 0x3C", [

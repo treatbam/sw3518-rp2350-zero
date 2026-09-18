@@ -185,6 +185,8 @@ display:
     id: tft
     model: ST7735
     cs_pin: GPIO17
+    # ili9xxx always wants a DC GPIO. If the panel has A0/RS, wire that to GP16.
+    # If there is truly no DC pad, use Arduino env:picow (3-wire, PIN_TFT_DC=-1) instead of this YAML.
     dc_pin: GPIO16
     reset_pin: GPIO20
     dimensions:

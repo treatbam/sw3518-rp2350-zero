@@ -9,7 +9,8 @@
 static const int PIN_TFT_SCK  = 18;
 static const int PIN_TFT_MOSI = 19;
 static const int PIN_TFT_CS   = 17;
-static const int PIN_TFT_DC   = 16;
+// No DC/A0/RS pad: Adafruit 3-wire (9-bit) SPI. If your glass has A0 or RS, that IS DC — set to 16.
+static const int PIN_TFT_DC   = -1;
 static const int PIN_TFT_RST  = 20;
 static const int PIN_TFT_BL   = 21;
 #else

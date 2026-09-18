@@ -65,7 +65,7 @@ Solder helper: [`docs/wiring-solder-guide-picow.png`](docs/wiring-solder-guide-p
 | TFT SCK | **18** | SPI0, right rail |
 | TFT MOSI | **19** | SPI0 |
 | TFT CS | **17** | |
-| TFT DC | **16** | Pico has no WS2812 on 16 |
+| TFT DC | **none** | 3-wire SPI (`PIN_TFT_DC = -1`). If the FPC says **A0** or **RS**, that is DC — wire it to GP16. |
 | TFT RST | **20** | |
 | TFT BL | **21** | PWM |
 | I2C SDA/SCL | **4 / 5** | SW3518 `0x3C` |

@@ -31,7 +31,9 @@ HA: Settings → Devices → ESPHome → add `sw3518-picow` (encryption key is p
 
 ## Pins
 
-See `docs/wiring-solder-guide-picow.png`. I2C **GP4/GP5** @ `0x3C`. TFT SPI0 **GP18/19/17/16/20**, BL **GP21**, buttons **GP6/GP7**, haptic **GP9**.
+See `docs/wiring-solder-guide-picow.png`. I2C **GP4/GP5** @ `0x3C`. TFT SPI0 **GP18/19/17/20**, BL **GP21**, buttons **GP6/GP7**, haptic **GP9**.
+
+No DC/A0/RS on the glass: ESPHome’s `ili9xxx` cannot drive 3-wire SPI. Use Arduino `pio run -e picow` (`PIN_TFT_DC = -1`). If the pin is labeled **A0** or **RS**, that *is* DC — GP16.
 
 ## UI
 

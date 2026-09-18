@@ -3,17 +3,26 @@
 // Default pin map — Waveshare RP2350-Zero + 1.4" 128x128 SPI TFT + SW3518 + buttons + haptic.
 // Change here; rebuild. Documented again in README.
 
-// --- 1.4"/1.44" ST7735S SPI 128x128 ---
-// All TFT GPIOs are on the Zero *front* castellated edge (USB-C at top).
-// SPI0 is remapped off the back-pad defaults (GP18/19) onto GP2/GP3
-// (Waveshare pinout: GP2 = SPI0 SCK, GP3 = SPI0 TX).
+#if defined(CHARGER_PICOW)
+// Raspberry Pi Pico W — every GPIO is on the 40-pin edge. Use SPI0 defaults
+// (GP16–21 sit on the right rail). No onboard WS2812; status is LED_BUILTIN.
+static const int PIN_TFT_SCK  = 18;
+static const int PIN_TFT_MOSI = 19;
+static const int PIN_TFT_CS   = 17;
+static const int PIN_TFT_DC   = 16;
+static const int PIN_TFT_RST  = 20;
+static const int PIN_TFT_BL   = 21;
+#else
+// Waveshare RP2350-Zero — TFT on *front* castellated edge (USB-C at top).
+// SPI0 remapped off back-pad defaults (GP18/19) onto GP2/GP3.
 static const int PIN_TFT_SCK  = 2;
 static const int PIN_TFT_MOSI = 3;
 static const int PIN_TFT_CS   = 1;
-static const int PIN_TFT_DC   = 15;  // front left; GP16 is the onboard WS2812
+static const int PIN_TFT_DC   = 15;  // GP16 is the onboard WS2812
 static const int PIN_TFT_RST  = 8;
-static const int PIN_TFT_BL   = 14;  // PWM night dim
-static const int PIN_WS2812   = 16;  // onboard WS2812B, GRB 800 kHz
+static const int PIN_TFT_BL   = 14;
+static const int PIN_WS2812   = 16;  // onboard WS2812B
+#endif
 
 // 128x128 panels need the 144 tab (sets 128 height + col/row start).
 // Do not use INITR_BLACKTAB / INITR_GREENTAB here — those are 128x160 1.8".

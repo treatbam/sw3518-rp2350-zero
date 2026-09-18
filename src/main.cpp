@@ -10,6 +10,7 @@
 #include "session.h"
 #include "status_led.h"
 #include "sw3518.h"
+#include "net.h"
 
 // --- colors (RGB565) ---
 static constexpr uint16_t COL_BLACK = 0x0000;
@@ -472,7 +473,11 @@ static void initDisplay() {
 void setup() {
   Serial.begin(115200);
   delay(200);
+#if defined(CHARGER_PICOW)
+  Serial.println("sw3518-picow");
+#else
   Serial.println("sw3518-rp2350-zero");
+#endif
 
   pinMode(PIN_BTN_A, INPUT_PULLUP);
   pinMode(PIN_BTN_B, INPUT_PULLUP);
@@ -482,11 +487,16 @@ void setup() {
 
   initDisplay();
   canvas.fillScreen(COL_BLACK);
+#if defined(CHARGER_PICOW)
+  gfxText(canvas, kW / 2, kH / 2 - 6, "SW3518 PicoW", COL_CYAN, COL_BLACK, 1, true);
+#else
   gfxText(canvas, kW / 2, kH / 2 - 6, "SW3518 Zero", COL_CYAN, COL_BLACK, 1, true);
+#endif
 #if !(defined(WOKWI_SIM) && WOKWI_SIM)
   tft.drawRGBBitmap(0, 0, canvas.getBuffer(), kW, kH);
 #endif
 
+  netSetup();  // Pico W: CYW43 (Wi-Fi + LED_BUILTIN) before status LED
   statusLedBegin();
   statusLedNoteTft(true);  // SPI TFT has no MISO — cannot prove the panel is attached
   charger.begin(PIN_I2C_SDA, PIN_I2C_SCL, 100000);
@@ -500,6 +510,7 @@ void setup() {
 void loop() {
   const uint32_t now = millis();
   hapticService();
+  netTick();
 
   serviceBtn(btnA, onAShort, onALong);
   serviceBtn(btnB, onBShort, onBLong);
@@ -532,6 +543,11 @@ void loop() {
     uint8_t faults = STATUS_OK;
     if (!charger.present()) faults |= STATUS_NO_SW3518;
     statusLedShow(faults, nightDim);
+    static uint32_t lastMqttMs = 0;
+    if (now - lastMqttMs >= 2000) {
+      lastMqttMs = now;
+      netPublish(snap, session, charger.present());
+    }
   }
 
   // night dim

@@ -1,7 +1,8 @@
 #pragma once
 #include <stdint.h>
 
-// Onboard WS2812B (GP16). Fault language is blink *count*, not live/idle:
+// Zero: onboard WS2812B (GP16). Pico W: LED_BUILTIN (CYW43).
+// Fault language is blink *count*, not live/idle:
 //   0 = OK (dim heartbeat)
 //   1 = SW3518 missing
 //   2 = TFT missing (only if noted; no MISO on this board so init cannot prove it)

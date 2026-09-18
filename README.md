@@ -2,7 +2,7 @@
 
 Portable **SW3518** USB charger meter on **Waveshare RP2350-Zero** with a **1.4″ SPI TFT (128×128 ST7735S)**, two momentary buttons, and a small haptic motor.
 
-This is the pocket / field sibling of [sw3518-GEEK](https://github.com/treatbam/sw3518-GEEK). **GEEK stays the Wi‑Fi / MQTT / radio bench unit** — this firmware has **no Wi‑Fi, MQTT, web, BLE, or radio**.
+This is the pocket / field sibling of [sw3518-GEEK](https://github.com/treatbam/sw3518-GEEK). **`env:rp2350-zero` has no Wi‑Fi.** **`env:picow`** (this `picow` branch) is the same TFT meter on a **Raspberry Pi Pico W** with **MQTT Home Assistant discovery**.
 
 MIT licensed.
 
@@ -53,6 +53,32 @@ Edit `include/pins.h` (also summarized here).
 | HAPTIC | **9** | Active HIGH → N‑FET gate |
 
 > **I2C naming:** GP4/GP5 are **I2C0** (`Wire`) on RP2350. The “I2C1” label in planning docs meant “the charger I2C bus,” not the hardware I2C1 block (that would be GP6/7 and would collide with the buttons).
+
+## Pico W (`env:picow`)
+
+Same 128×128 UI and SW3518 I2C driver. Wi-Fi publishes GEEK-style **MQTT sensors** with Home Assistant discovery (`homeassistant/sensor/sw3518pw_xxxx/...`). ESPHome would mean rewriting the charger + TFT stack; MQTT on this firmware is the smaller path.
+
+Solder helper: [`docs/wiring-solder-guide-picow.png`](docs/wiring-solder-guide-picow.png) (`python3 docs/make_solder_pinout_picow.py`).
+
+| Function | Pico W GPIO | Notes |
+|----------|-------------|--------|
+| TFT SCK | **18** | SPI0, right rail |
+| TFT MOSI | **19** | SPI0 |
+| TFT CS | **17** | |
+| TFT DC | **16** | Pico has no WS2812 on 16 |
+| TFT RST | **20** | |
+| TFT BL | **21** | PWM |
+| I2C SDA/SCL | **4 / 5** | SW3518 `0x3C` |
+| BTN A/B | **6 / 7** | same grammar |
+| Haptic | **9** | |
+| Status | **LED_BUILTIN** | CYW43 LED, blink count = SW3518 missing |
+
+```bash
+cp include/secrets.h.example include/secrets.h   # fill WIFI_SSID, MQTT_HOST, …
+pio run -e picow
+```
+
+Empty `WIFI_SSID` still builds (TFT-only). Topics: `picow/sw3518/{vin,vout,i_c,i_a,power,power_c,power_a,protocol,session_wh,session_peak_w,charging,linked,status}`. Do not use GP23–25 (Wi-Fi). Pico BOOT/RUN are flash/reset, not UI.
 
 ## Display / ST7735 init
 

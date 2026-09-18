@@ -188,7 +188,6 @@ display:
       height: 128
     invert_colors: false
     color_order: bgr
-    color_palette: 8BIT
     data_rate: 8MHz
     update_interval: 1s
     lambda: |-

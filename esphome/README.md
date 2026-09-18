@@ -30,4 +30,4 @@ See `docs/wiring-solder-guide-picow.png`. I2C **GP4/GP5** @ `0x3C`. TFT SPI0 **G
 - **B short** — Session
 - **B hold** — reset session Wh integrator + haptic
 
-Display uses 8-bit colour to fit Pico W RAM. If the image is shifted a few pixels, add `dimensions.offset_width` / `offset_height` (1.44″ ST7735 tabs vary).
+Display is RGB565 16-bit (same as the RP2350 Arduino canvas). If the Pico W OOMs or the compile fails, add `color_palette: 8BIT` back under `display:`. If the image is shifted a few pixels, add `dimensions.offset_width` / `offset_height` (1.44″ ST7735 tabs vary).

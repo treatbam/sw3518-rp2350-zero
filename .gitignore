@@ -11,6 +11,8 @@
 
 # local credentials / secrets
 include/secrets.h
+esphome/secrets.yaml
+esphome/.esphome/
 
 # host unit-test binary
 tests/test_session

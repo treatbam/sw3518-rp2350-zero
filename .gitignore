@@ -13,6 +13,8 @@
 include/secrets.h
 esphome/secrets.yaml
 esphome/.esphome/
+secrets.yaml
+.esphome/
 
 # host unit-test binary
 tests/test_session

@@ -1,8 +1,11 @@
 # ESPHome — SW3518 Pico W
 
-Native Home Assistant device (ESPHome API, not the Arduino MQTT path). Same Pico W pinout as `env:picow`.
+YAML and the `sw3518` component live at the **repo root** (ESPHome requires `components/<name>/` next to the yaml):
 
-Arduino firmware in `src/` is unchanged. This folder is the rewrite for HA.
+- [`../sw3518-picow.yaml`](../sw3518-picow.yaml)
+- [`../components/sw3518/`](../components/sw3518/)
+
+Arduino firmware in `src/` is unchanged.
 
 ## Why ESPHome here
 
@@ -10,15 +13,15 @@ Arduino firmware in `src/` is unchanged. This folder is the rewrite for HA.
 
 ## VS Code
 
-The stock ESPHome YAML schema does **not** know `sw3518:` — red squiggles on that key are normal. Compile anyway (`esphome run` / ESPHome extension **Upload**).
+Open the **repo root** (the folder with `platformio.ini` and `sw3518-picow.yaml`). The stock ESPHome schema still underlines `sw3518:` — that is normal. Compile anyway.
 
-Run from this `esphome/` folder (or open `sw3518-picow.yaml`). The component is pulled from GitHub `treatbam/sw3518-rp2350-zero@main`. If you copied only the yaml into the HA add-on, that GitHub source is required; a lone `path: components` will fail.
+If you copy yaml into the HA add-on, copy the whole `components/sw3518/` tree next to it.
 
 ## Flash
 
 ```bash
-cd esphome
-cp secrets.yaml.example secrets.yaml   # wifi_ssid / wifi_password
+# repo root (next to platformio.ini)
+cp secrets.yaml.example secrets.yaml
 esphome run sw3518-picow.yaml
 ```
 

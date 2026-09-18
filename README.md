@@ -80,7 +80,7 @@ pio run -e picow
 
 Empty `WIFI_SSID` still builds (TFT-only). Topics: `picow/sw3518/{vin,vout,i_c,i_a,power,power_c,power_a,protocol,session_wh,session_peak_w,charging,linked,status}`. Do not use GP23–25 (Wi-Fi). Pico BOOT/RUN are flash/reset, not UI.
 
-**ESPHome rewrite** (native HA API, OTA, YAML TFT): [`esphome/`](esphome/). `esphome run sw3518-picow.yaml` after copying `esphome/secrets.yaml.example`. Same Pico W pins. Arduino `env:picow` MQTT and ESPHome are alternatives — flash one or the other.
+**ESPHome rewrite** (native HA API, OTA, YAML TFT): `sw3518-picow.yaml` + `components/sw3518/` at the **repo root**. Copy `secrets.yaml.example` → `secrets.yaml`, then `esphome run sw3518-picow.yaml`. Same Pico W pins. Arduino `env:picow` MQTT and ESPHome are alternatives — flash one or the other.
 
 ## Display / ST7735 init
 

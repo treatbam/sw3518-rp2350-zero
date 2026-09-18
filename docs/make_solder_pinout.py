@@ -26,7 +26,7 @@ FRONT_L = [
     ("29", "", "free"),
     ("28", "", "free"),
     ("27", "", "free"),
-    ("26", "I-sense ADC", "adc"),
+    ("26", "", "free"),
     ("15", "TFT DC", "tft"),
     ("14", "TFT BL", "tft"),
 ]
@@ -168,9 +168,6 @@ def main():
             "Module silk SCK = I2C SCL",
             "not SPI clock.",
             "Share GND with the Zero.",
-            "I-sense pad: DMM vs GND first.",
-            "If >0.3V do NOT wire to GPIO.",
-            "OK millivolts: pad-1k-GP26.",
             "Do not feed charger VBUS",
             "into 3V3.",
         ],

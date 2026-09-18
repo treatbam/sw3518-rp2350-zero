@@ -36,6 +36,3 @@ static const int PIN_BTN_B = 7;  // short = prev / jump Session; long = clear se
 
 // --- Haptic motor via N-FET gate (active HIGH) ---
 static const int PIN_HAPTIC = 9;
-
-// Optional analog I-sense — see include/isense.h (meter the pad vs GND first).
-// static const int PIN_ISENSE = 26;  // ADC0, defined in isense.h

@@ -51,21 +51,8 @@ Edit `include/pins.h` (also summarized here).
 | BTN_A | **6** | `INPUT_PULLUP`, active LOW |
 | BTN_B | **7** | `INPUT_PULLUP`, active LOW |
 | HAPTIC | **9** | Active HIGH → N‑FET gate |
-| I-sense (optional) | **26** | ADC0. **Meter the pad vs GND first.** If it is ~Vout, it is high-side CSN/CSP — do not connect. |
 
 > **I2C naming:** GP4/GP5 are **I2C0** (`Wire`) on RP2350. The “I2C1” label in planning docs meant “the charger I2C bus,” not the hardware I2C1 block (that would be GP6/7 and would collide with the buttons).
-
-## Analog I-sense pad (optional)
-
-The SW3518 datasheet (iSmartWare DS014) puts **per-port current shunts on the high side of VBUS**: CSPA/CSNA (Type-A) and CSPC/CSNC (Type-C), typical **RCS = 5 mΩ**, abs max **22 V**. Combined port current is already on I2C (`ia_ma + ic_ma`).
-
-A marketplace “current sensing reference / low-side / both ports” copper zone on the **back of the module** is **not** those pins unless you prove it:
-
-1. DMM from the pad to **module GND**, charger at 5 V idle, then under load.
-2. If you see **~5–20 V**, that is VBUS/CSN — **do not** tie it to the RP2350.
-3. If you see **tens of millivolts** that scale with load, it may be a true low-side drop. Then: pad → **1 kΩ** → **GP26**, BAT54S clamp to 3V3/GND, share GND. Session page shows `Is x.xxA` (or `Is HI` if the ADC sees >0.4 V).
-
-Calibrate `ISENSE_MOHM` in `include/isense.h` with `R = V_drop / I_known`.
 
 ## Display / ST7735 init
 

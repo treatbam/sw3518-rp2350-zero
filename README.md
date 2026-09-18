@@ -33,6 +33,8 @@ Optional third **Mode** button is reserved in comments in `include/pins.h` (unus
 
 ## Default pin map
 
+Soldering helper (Zero front/back + wire-to-part): [`docs/wiring-solder-guide.png`](docs/wiring-solder-guide.png). Regenerate with `python3 docs/make_solder_pinout.py`.
+
 Edit `include/pins.h` (also summarized here).
 
 | Function | GPIO | Notes |

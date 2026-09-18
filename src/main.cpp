@@ -8,6 +8,7 @@
 
 #include "pins.h"
 #include "session.h"
+#include "status_led.h"
 #include "sw3518.h"
 
 // --- colors (RGB565) ---
@@ -486,6 +487,8 @@ void setup() {
   tft.drawRGBBitmap(0, 0, canvas.getBuffer(), kW, kH);
 #endif
 
+  statusLedBegin();
+  statusLedNoteTft(true);  // SPI TFT has no MISO — cannot prove the panel is attached
   charger.begin(PIN_I2C_SDA, PIN_I2C_SCL, 100000);
   Serial.printf("SW3518 %s @0x%02X SDA=%d SCL=%d\n", charger.present() ? "OK" : "MISSING",
                 (unsigned)SW3518::kAddr, PIN_I2C_SDA, PIN_I2C_SCL);
@@ -526,6 +529,9 @@ void loop() {
       session.onTick(now, nullptr, Link::Lost);
     }
     drawFrame();
+    uint8_t faults = STATUS_OK;
+    if (!charger.present()) faults |= STATUS_NO_SW3518;
+    statusLedShow(faults, nightDim);
   }
 
   // night dim

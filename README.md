@@ -20,6 +20,7 @@ MIT licensed.
 - Session tracking in RAM (charged ms while load present, mWh, peaks) — no NVS required for MVP. I2C loss **pauses** energy (does not bill the outage). Host tests: `make -C tests test`.
 - Haptic pulse on protocol change, page enter, session clear, and A-long test
 - Night dim: backlight PWM drops after ~90 s idle; any button wakes it
+- Onboard **WS2812** (GP16): blink *count* = what’s missing. 0 = OK (dim cyan heartbeat), **1 orange = SW3518 missing**, 2 magenta = TFT missing, 3 red = both. Night dim lowers brightness. TFT has no MISO on this pin map, so 2-blink cannot be proven and is reserved.
 
 ### Button grammar
 
@@ -39,9 +40,10 @@ Edit `include/pins.h` (also summarized here).
 | TFT SCK | **18** | SPI0 |
 | TFT MOSI | **19** | SPI0 |
 | TFT CS | **17** | |
-| TFT DC | **16** | GP**15** in Wokwi (`WOKWI_SIM`) so it is not Pico SPI0 MISO |
+| TFT DC | **15** | Moved off GP16 so the onboard WS2812 can own that pin |
 | TFT RST | **20** | |
 | TFT BL | **21** | PWM night dim |
+| WS2812 | **16** | Onboard RGB (Waveshare schematic DIN, `PICO_DEFAULT_WS2812_PIN`) |
 | I2C SDA | **4** | Wire / **I2C0** (RP2350 GP4/5) |
 | I2C SCL | **5** | SW3518 addr **0x3C** |
 | BTN_A | **6** | `INPUT_PULLUP`, active LOW |

@@ -7,14 +7,12 @@
 static const int PIN_TFT_SCK  = 18;
 static const int PIN_TFT_MOSI = 19;
 static const int PIN_TFT_CS   = 17;
-#if defined(WOKWI_SIM) && WOKWI_SIM
-// Pico SPI0 default MISO is GP16 — keep DC off that pin in the sim twin.
+// GP16 is the onboard WS2812 (Waveshare RP2350-Zero schematic DIN, Pico SDK
+// PICO_DEFAULT_WS2812_PIN). TFT DC lives on GP15 so it does not fight the LED.
 static const int PIN_TFT_DC   = 15;
-#else
-static const int PIN_TFT_DC   = 16;
-#endif
 static const int PIN_TFT_RST  = 20;
 static const int PIN_TFT_BL   = 21;  // backlight; PWM for night dim
+static const int PIN_WS2812   = 16;  // onboard WS2812B, GRB 800 kHz
 
 // 128x128 panels need the 144 tab (sets 128 height + col/row start).
 // Do not use INITR_BLACKTAB / INITR_GREENTAB here — those are 128x160 1.8".

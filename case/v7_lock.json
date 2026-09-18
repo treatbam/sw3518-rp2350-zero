@@ -177,9 +177,10 @@
       "sck": 18,
       "mosi": 19,
       "cs": 17,
-      "dc": 16,
+      "dc": 15,
       "rst": 20,
       "bl": 21,
+      "ws2812": 16,
       "bundle_wires": 6,
       "path": "mid Zero \u2192 +Y flex \u2192 lid tray"
     },

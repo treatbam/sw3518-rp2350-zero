@@ -4,8 +4,9 @@ from esphome.components import i2c
 from esphome.const import CONF_ID
 
 DEPENDENCIES = ["i2c"]
+AUTOLOAD = ["sensor", "text_sensor", "binary_sensor"]
 CODEOWNERS = ["@treatbam"]
-MULTI_CONF = True
+MULTI_CONF = False
 
 sw3518_ns = cg.esphome_ns.namespace("sw3518")
 SW3518Component = sw3518_ns.class_("SW3518Component", cg.PollingComponent, i2c.I2CDevice)

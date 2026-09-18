@@ -8,6 +8,12 @@ Arduino firmware in `src/` is unchanged. This folder is the rewrite for HA.
 
 `env:picow` already publishes MQTT discovery. ESPHome adds OTA, the HA device API, and YAML for the TFT/buttons without a custom MQTT client. The SW3518 I2C protocol is a **local external component** (`components/sw3518`) — same registers as `src/sw3518.cpp`.
 
+## VS Code
+
+The stock ESPHome YAML schema does **not** know `sw3518:` — red squiggles on that key are normal. Compile anyway (`esphome run` / ESPHome extension **Upload**).
+
+Run from this `esphome/` folder (or open `sw3518-picow.yaml`). The component is pulled from GitHub `treatbam/sw3518-rp2350-zero@main`. If you copied only the yaml into the HA add-on, that GitHub source is required; a lone `path: components` will fail.
+
 ## Flash
 
 ```bash

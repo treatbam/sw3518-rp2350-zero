@@ -23,9 +23,11 @@ wifi:
   password: !secret wifi_password
 
 external_components:
-  - source:
-      type: local
-      path: components
+  # GitHub so HA add-on / VS Code work even if this yaml is not next to components/.
+  # For local hacks, use: source: components
+  - source: github://treatbam/sw3518-rp2350-zero@main
+    components: [sw3518]
+    refresh: 0s
 
 i2c:
   sda: GPIO4
@@ -46,6 +48,7 @@ sw3518:
 
 sensor:
   - platform: sw3518
+    sw3518_id: charger
     vin:
       name: Input voltage
       id: vin
@@ -79,12 +82,14 @@ sensor:
 
 text_sensor:
   - platform: sw3518
+    sw3518_id: charger
     protocol:
       name: Charge protocol
       id: protocol
 
 binary_sensor:
   - platform: sw3518
+    sw3518_id: charger
     linked:
       name: SW3518 linked
       id: linked

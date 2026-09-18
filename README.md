@@ -39,12 +39,12 @@ Edit `include/pins.h` (also summarized here).
 
 | Function | GPIO | Notes |
 |----------|------|--------|
-| TFT SCK | **18** | SPI0 |
-| TFT MOSI | **19** | SPI0 |
-| TFT CS | **17** | |
-| TFT DC | **15** | Moved off GP16 so the onboard WS2812 can own that pin |
-| TFT RST | **20** | |
-| TFT BL | **21** | PWM night dim |
+| TFT SCK | **2** | SPI0 SCK, **front** edge |
+| TFT MOSI | **3** | SPI0 TX, front edge |
+| TFT CS | **1** | front edge |
+| TFT DC | **15** | front left (GP16 is onboard WS2812) |
+| TFT RST | **8** | front edge |
+| TFT BL | **14** | PWM night dim, front left |
 | WS2812 | **16** | Onboard RGB (Waveshare schematic DIN, `PICO_DEFAULT_WS2812_PIN`) |
 | I2C SDA | **4** | Wire / **I2C0** (RP2350 GP4/5) |
 | I2C SCL | **5** | SW3518 addr **0x3C** |

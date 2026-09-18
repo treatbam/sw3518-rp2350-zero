@@ -3,15 +3,16 @@
 // Default pin map — Waveshare RP2350-Zero + 1.4" 128x128 SPI TFT + SW3518 + buttons + haptic.
 // Change here; rebuild. Documented again in README.
 
-// --- 1.4"/1.44" ST7735S SPI 128x128 (SPI0 defaults on Pico family: SCK=18, MOSI=19) ---
-static const int PIN_TFT_SCK  = 18;
-static const int PIN_TFT_MOSI = 19;
-static const int PIN_TFT_CS   = 17;
-// GP16 is the onboard WS2812 (Waveshare RP2350-Zero schematic DIN, Pico SDK
-// PICO_DEFAULT_WS2812_PIN). TFT DC lives on GP15 so it does not fight the LED.
-static const int PIN_TFT_DC   = 15;
-static const int PIN_TFT_RST  = 20;
-static const int PIN_TFT_BL   = 21;  // backlight; PWM for night dim
+// --- 1.4"/1.44" ST7735S SPI 128x128 ---
+// All TFT GPIOs are on the Zero *front* castellated edge (USB-C at top).
+// SPI0 is remapped off the back-pad defaults (GP18/19) onto GP2/GP3
+// (Waveshare pinout: GP2 = SPI0 SCK, GP3 = SPI0 TX).
+static const int PIN_TFT_SCK  = 2;
+static const int PIN_TFT_MOSI = 3;
+static const int PIN_TFT_CS   = 1;
+static const int PIN_TFT_DC   = 15;  // front left; GP16 is the onboard WS2812
+static const int PIN_TFT_RST  = 8;
+static const int PIN_TFT_BL   = 14;  // PWM night dim
 static const int PIN_WS2812   = 16;  // onboard WS2812B, GRB 800 kHz
 
 // 128x128 panels need the 144 tab (sets 128 height + col/row start).
@@ -30,8 +31,8 @@ static const uint8_t SW3518_I2C_ADDR = 0x3C;
 // --- Momentary buttons on case LID beside screen (active LOW, INPUT_PULLUP) ---
 static const int PIN_BTN_A = 6;  // short = next page; long = haptic test
 static const int PIN_BTN_B = 7;  // short = prev / jump Session; long = clear session
-// Optional 3rd button (Mode) — leave unused or wire to free GPIO:
-// static const int PIN_BTN_MODE = 8;
+// Optional 3rd button (Mode) — GP8 is TFT RST; use GP10+ if needed.
+// static const int PIN_BTN_MODE = 10;
 
 // --- Haptic motor via N-FET gate (active HIGH) ---
 static const int PIN_HAPTIC = 9;

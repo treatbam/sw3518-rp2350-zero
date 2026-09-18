@@ -174,12 +174,12 @@
       "exit": "+Y"
     },
     "tft_spi": {
-      "sck": 18,
-      "mosi": 19,
-      "cs": 17,
+      "sck": 2,
+      "mosi": 3,
+      "cs": 1,
       "dc": 15,
-      "rst": 20,
-      "bl": 21,
+      "rst": 8,
+      "bl": 14,
       "ws2812": 16,
       "bundle_wires": 6,
       "path": "mid Zero \u2192 +Y flex \u2192 lid tray"

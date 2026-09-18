@@ -81,7 +81,7 @@
     ],
     [
       "lcd1:SCK",
-      "pico:GP18",
+      "pico:GP2",
       "green",
       [
         "h-40"
@@ -89,7 +89,7 @@
     ],
     [
       "lcd1:MOSI",
-      "pico:GP19",
+      "pico:GP3",
       "violet",
       [
         "h-40"
@@ -97,7 +97,7 @@
     ],
     [
       "lcd1:CS",
-      "pico:GP17",
+      "pico:GP1",
       "blue",
       [
         "h-40"
@@ -113,7 +113,7 @@
     ],
     [
       "lcd1:RST",
-      "pico:GP20",
+      "pico:GP8",
       "gray",
       [
         "h-40"

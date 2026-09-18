@@ -466,7 +466,7 @@ static void initDisplay() {
   delay(200);
   tft.fillScreen(COL_BLACK);
 #else
-  // earlephilhower SPI0: default SCK=18 MOSI=19 matches our map
+  // SPI0 remapped to front-edge GP2/GP3 (not the back-pad defaults 18/19)
   SPI.setSCK(PIN_TFT_SCK);
   SPI.setTX(PIN_TFT_MOSI);
   SPI.begin(true);
